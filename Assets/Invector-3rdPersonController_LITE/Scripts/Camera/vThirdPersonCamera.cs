@@ -1,4 +1,4 @@
-﻿using Invector;
+﻿using Motiong;
 using UnityEngine;
 
 public class vThirdPersonCamera : MonoBehaviour
@@ -55,6 +55,10 @@ public class vThirdPersonCamera : MonoBehaviour
     private float xMaxLimit = 360f;
     private float cullingHeight = 0.2f;
     private float cullingMinDist = 0.1f;
+    private float _distanceVelocity;
+    private float _heightVelocity;
+    private const float MinCameraDistance = 0.35f;
+    private const float CullingSmoothTime = 0.12f;
 
     #endregion
 
@@ -86,7 +90,11 @@ public class vThirdPersonCamera : MonoBehaviour
 
     void FixedUpdate()
     {
-        if (target == null || targetLookAt == null) return;
+        if (target == null || targetLookAt == null)
+            return;
+
+        if (_camera != null && !_camera.enabled)
+            return;
 
         CameraMovement();
     }
@@ -124,6 +132,18 @@ public class vThirdPersonCamera : MonoBehaviour
     /// </summary>
     /// <param name="x"></param>
     /// <param name="y"></param>
+    public void SyncRotation(float yaw, float pitch)
+    {
+        mouseX = yaw;
+        mouseY = vExtensions.ClampAngle(pitch, yMinLimit, yMaxLimit);
+
+        if (targetLookAt != null)
+            targetLookAt.rotation = Quaternion.Euler(mouseY, mouseX, 0f);
+    }
+
+    public float HorizontalAngle => mouseX;
+    public float VerticalAngle => mouseY;
+
     public void RotateCamera(float x, float y)
     {
         // free rotation 
@@ -152,59 +172,78 @@ public class vThirdPersonCamera : MonoBehaviour
         if (currentTarget == null)
             return;
 
-        distance = Mathf.Lerp(distance, defaultDistance, smoothFollow * Time.deltaTime);
-        cullingDistance = Mathf.Lerp(cullingDistance, distance, Time.deltaTime);
-        var camDir = (forward * targetLookAt.forward) + (rightOffset * targetLookAt.right);
+        float targetDistance = defaultDistance;
+        float targetHeight = height;
 
+        var camDir = (forward * targetLookAt.forward) + (rightOffset * targetLookAt.right);
         camDir = camDir.normalized;
 
         var targetPos = new Vector3(currentTarget.position.x, currentTarget.position.y + offSetPlayerPivot, currentTarget.position.z);
         currentTargetPos = targetPos;
         desired_cPos = targetPos + new Vector3(0, height, 0);
-        current_cPos = currentTargetPos + new Vector3(0, currentHeight, 0);
+
         RaycastHit hitInfo;
+        float probeHeight = height;
 
-        ClipPlanePoints planePoints = _camera.NearClipPlanePoints(current_cPos + (camDir * (distance)), clipPlaneMargin);
-        ClipPlanePoints oldPoints = _camera.NearClipPlanePoints(desired_cPos + (camDir * distance), clipPlaneMargin);
-
-        //Check if Height is not blocked 
-        if (Physics.SphereCast(targetPos, checkHeightRadius, Vector3.up, out hitInfo, cullingHeight + 0.2f, cullingLayer))
+        if (Physics.SphereCast(targetPos, checkHeightRadius, Vector3.up, out hitInfo, height + 0.2f, cullingLayer))
         {
-            var t = hitInfo.distance - 0.2f;
+            float t = hitInfo.distance - 0.2f;
             t -= height;
             t /= (cullingHeight - height);
-            cullingHeight = Mathf.Lerp(height, cullingHeight, Mathf.Clamp(t, 0.0f, 1.0f));
+            probeHeight = Mathf.Lerp(height, cullingHeight, Mathf.Clamp(t, 0.0f, 1.0f));
         }
 
-        //Check if desired target position is not blocked       
-        if (CullingRayCast(desired_cPos, oldPoints, out hitInfo, distance + 0.2f, cullingLayer, Color.blue))
+        Vector3 probePos = currentTargetPos + new Vector3(0, probeHeight, 0);
+        ClipPlanePoints planePoints = _camera.NearClipPlanePoints(probePos + (camDir * targetDistance), clipPlaneMargin);
+        ClipPlanePoints oldPoints = _camera.NearClipPlanePoints(desired_cPos + (camDir * targetDistance), clipPlaneMargin);
+
+        float closestHit = targetDistance;
+        if (CullingRayCast(desired_cPos, oldPoints, out hitInfo, targetDistance + 0.2f, cullingLayer))
+            closestHit = Mathf.Min(closestHit, hitInfo.distance - 0.2f);
+
+        if (CullingRayCast(probePos, planePoints, out hitInfo, targetDistance, cullingLayer))
+            closestHit = Mathf.Min(closestHit, hitInfo.distance - 0.2f);
+
+        targetDistance = Mathf.Clamp(closestHit, MinCameraDistance, defaultDistance);
+
+        if (targetDistance < defaultDistance - 0.01f)
         {
-            distance = hitInfo.distance - 0.2f;
-            if (distance < defaultDistance)
-            {
-                var t = hitInfo.distance;
-                t -= cullingMinDist;
-                t /= cullingMinDist;
-                currentHeight = Mathf.Lerp(cullingHeight, height, Mathf.Clamp(t, 0.0f, 1.0f));
-                current_cPos = currentTargetPos + new Vector3(0, currentHeight, 0);
-            }
+            float t = targetDistance;
+            t -= cullingMinDist;
+            t /= cullingMinDist;
+            targetHeight = Mathf.Lerp(probeHeight, height, Mathf.Clamp(t, 0.0f, 1.0f));
         }
-        else
-        {
-            currentHeight = height;
-        }
-        //Check if target position with culling height applied is not blocked
-        if (CullingRayCast(current_cPos, planePoints, out hitInfo, distance, cullingLayer, Color.cyan)) distance = Mathf.Clamp(cullingDistance, 0.0f, defaultDistance);
+
+        distance = Mathf.SmoothDamp(
+            distance,
+            targetDistance,
+            ref _distanceVelocity,
+            CullingSmoothTime,
+            Mathf.Infinity,
+            Time.deltaTime);
+
+        currentHeight = Mathf.SmoothDamp(
+            currentHeight,
+            targetHeight,
+            ref _heightVelocity,
+            CullingSmoothTime,
+            Mathf.Infinity,
+            Time.deltaTime);
+
+        current_cPos = currentTargetPos + new Vector3(0, currentHeight, 0);
+
         var lookPoint = current_cPos + targetLookAt.forward * 2f;
-        lookPoint += (targetLookAt.right * Vector3.Dot(camDir * (distance), targetLookAt.right));
+        lookPoint += (targetLookAt.right * Vector3.Dot(camDir * distance, targetLookAt.right));
         targetLookAt.position = current_cPos;
 
         Quaternion newRot = Quaternion.Euler(mouseY, mouseX, 0);
         targetLookAt.rotation = Quaternion.Slerp(targetLookAt.rotation, newRot, smoothCameraRotation * Time.deltaTime);
-        transform.position = current_cPos + (camDir * (distance));
-        var rotation = Quaternion.LookRotation((lookPoint) - transform.position);
+        transform.position = current_cPos + (camDir * distance);
 
-        transform.rotation = rotation;
+        Vector3 lookDirection = lookPoint - transform.position;
+        if (lookDirection.sqrMagnitude > 0.0001f)
+            transform.rotation = Quaternion.LookRotation(lookDirection);
+
         movementSpeed = Vector2.zero;
     }
 
@@ -217,34 +256,30 @@ public class vThirdPersonCamera : MonoBehaviour
     /// <param name="distance"></param>
     /// <param name="cullingLayer"></param>
     /// <returns></returns>
-    bool CullingRayCast(Vector3 from, ClipPlanePoints _to, out RaycastHit hitInfo, float distance, LayerMask cullingLayer, Color color)
+    bool CullingRayCast(Vector3 from, ClipPlanePoints _to, out RaycastHit hitInfo, float rayDistance, LayerMask cullingLayer)
     {
+        hitInfo = default;
         bool value = false;
+        float closestDistance = rayDistance;
 
-        if (Physics.Raycast(from, _to.LowerLeft - from, out hitInfo, distance, cullingLayer))
+        TryRaycast(from, _to.LowerLeft - from, rayDistance, cullingLayer, ref value, ref closestDistance, ref hitInfo);
+        TryRaycast(from, _to.LowerRight - from, rayDistance, cullingLayer, ref value, ref closestDistance, ref hitInfo);
+        TryRaycast(from, _to.UpperLeft - from, rayDistance, cullingLayer, ref value, ref closestDistance, ref hitInfo);
+        TryRaycast(from, _to.UpperRight - from, rayDistance, cullingLayer, ref value, ref closestDistance, ref hitInfo);
+
+        return value;
+    }
+
+    static void TryRaycast(Vector3 from, Vector3 direction, float rayDistance, LayerMask cullingLayer, ref bool value, ref float closestDistance, ref RaycastHit hitInfo)
+    {
+        if (!Physics.Raycast(from, direction, out RaycastHit hit, rayDistance, cullingLayer))
+            return;
+
+        if (!value || hit.distance < closestDistance)
         {
             value = true;
-            cullingDistance = hitInfo.distance;
+            closestDistance = hit.distance;
+            hitInfo = hit;
         }
-
-        if (Physics.Raycast(from, _to.LowerRight - from, out hitInfo, distance, cullingLayer))
-        {
-            value = true;
-            if (cullingDistance > hitInfo.distance) cullingDistance = hitInfo.distance;
-        }
-
-        if (Physics.Raycast(from, _to.UpperLeft - from, out hitInfo, distance, cullingLayer))
-        {
-            value = true;
-            if (cullingDistance > hitInfo.distance) cullingDistance = hitInfo.distance;
-        }
-
-        if (Physics.Raycast(from, _to.UpperRight - from, out hitInfo, distance, cullingLayer))
-        {
-            value = true;
-            if (cullingDistance > hitInfo.distance) cullingDistance = hitInfo.distance;
-        }
-
-        return hitInfo.collider && value;
     }
 }

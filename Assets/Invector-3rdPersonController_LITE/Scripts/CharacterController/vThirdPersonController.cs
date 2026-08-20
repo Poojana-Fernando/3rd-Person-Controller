@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Invector.vCharacterController
+namespace Motiong.vCharacterController
 {
     public class vThirdPersonController : vThirdPersonAnimator
     {

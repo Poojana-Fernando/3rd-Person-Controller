@@ -1,38 +1,38 @@
 ﻿using UnityEngine;
 using UnityEditor;
 
-namespace Invector
+namespace Motiong
 {
     class vHelperEditor : EditorWindow
     {
-        [MenuItem("Invector/Help/Forum")]
+        [MenuItem("Motiong/Help/Forum")]
         public static void Forum()
         {
-            Application.OpenURL("http://invector.proboards.com/");
+            Application.OpenURL("https://assetstore.unity.com/publishers/13943");
         }
 
-        [MenuItem("Invector/Help/FAQ")]
+        [MenuItem("Motiong/Help/FAQ")]
         public static void FAQMenu()
         {
-            Application.OpenURL("http://inv3ctor.wix.com/invector#!faq/cnni7");
+            Application.OpenURL("https://assetstore.unity.com/publishers/13943");
         }
        
-        [MenuItem("Invector/Help/Release Notes")]
+        [MenuItem("Motiong/Help/Release Notes")]
         public static void ReleaseNotes()
         {
-            Application.OpenURL("http://inv3ctor.wix.com/invector#!release-notes/eax8d");
+            Application.OpenURL("https://assetstore.unity.com/publishers/13943");
         }
 
-        [MenuItem("Invector/Help/Youtube Tutorials")]
+        [MenuItem("Motiong/Help/Youtube Tutorials")]
         public static void Youtube()
         {
             Application.OpenURL("https://www.youtube.com/playlist?list=PLvgXGzhT_qehYG_Kzl5P6DuIpHynZP9Ju");
         }
 
-        [MenuItem("Invector/Help/Online Documentation")]
+        [MenuItem("Motiong/Help/Online Documentation")]
         public static void Documentation()
         {
-            Application.OpenURL("http://www.invector.xyz/thirdpersondocumentation");
+            Application.OpenURL("https://assetstore.unity.com/publishers/13943");
         }       
     }
 }

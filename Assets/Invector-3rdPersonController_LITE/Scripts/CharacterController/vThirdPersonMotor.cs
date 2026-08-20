@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Invector.vCharacterController
+namespace Motiong.vCharacterController
 {
     public class vThirdPersonMotor : MonoBehaviour
     {
@@ -111,7 +111,8 @@ namespace Invector.vCharacterController
         public void Init()
         {
             animator = GetComponent<Animator>();
-            animator.updateMode = AnimatorUpdateMode.Fixed;
+            // Normal update lets Animation Rigging (MultiAim) evaluate with the Animator.
+            animator.updateMode = AnimatorUpdateMode.Normal;
 
             // slides the character through walls and edges
             frictionPhysics = new PhysicsMaterial();

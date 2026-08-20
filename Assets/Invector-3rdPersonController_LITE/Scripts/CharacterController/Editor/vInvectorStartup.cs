@@ -1,11 +1,11 @@
 ﻿using UnityEditor;
 
-namespace Invector.vCharacterController
+namespace Motiong.vCharacterController
 {
     [InitializeOnLoad]
-    public class vInvectorStartup
+    public class vMotiongStartup
     {
-        static vInvectorStartup()
+        static vMotiongStartup()
         {
             EditorApplication.update -= TriggerWelcomeScreen;
             EditorApplication.update += TriggerWelcomeScreen;
@@ -13,12 +13,7 @@ namespace Invector.vCharacterController
 
         private static void TriggerWelcomeScreen()
         {
-            var showAtStartup = vEditorStartupPrefs.DisplayWelcomeScreen && EditorApplication.timeSinceStartup < 30f;
 
-            if (showAtStartup)
-            {
-                vInvectorWelcomeWindow.Open();
-            }
             EditorApplication.update -= TriggerWelcomeScreen;
         }
 

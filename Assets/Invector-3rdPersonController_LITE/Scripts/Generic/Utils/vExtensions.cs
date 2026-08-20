@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Invector
+namespace Motiong
 {
     public static class vExtensions
     {

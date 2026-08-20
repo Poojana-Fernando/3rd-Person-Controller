@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Invector.vCharacterController
+namespace Motiong.vCharacterController
 {
     public class vThirdPersonInput : MonoBehaviour
     {
@@ -21,12 +21,16 @@ namespace Invector.vCharacterController
         [HideInInspector] public vThirdPersonCamera tpCamera;
         [HideInInspector] public Camera cameraMain;
 
+        protected PlayerGunController gunController;
+
         #endregion
 
         protected virtual void Start()
         {
+            gunController = GetComponent<PlayerGunController>();
             InitilizeController();
             InitializeTpCamera();
+            UseThirdPersonCameraAsReference();
         }
 
         protected virtual void FixedUpdate()
@@ -87,22 +91,41 @@ namespace Invector.vCharacterController
             cc.input.z = Input.GetAxis(verticallInput);
         }
 
+        public void UseThirdPersonCameraAsReference()
+        {
+            if (tpCamera == null)
+                tpCamera = FindFirstObjectByType<vThirdPersonCamera>();
+
+            if (tpCamera == null)
+                return;
+
+            Camera thirdPersonCamera = tpCamera.GetComponent<Camera>();
+            if (thirdPersonCamera == null)
+                return;
+
+            cameraMain = thirdPersonCamera;
+            cc.rotateTarget = thirdPersonCamera.transform;
+        }
+
         protected virtual void CameraInput()
         {
-            if (!cameraMain)
+            if (gunController != null && gunController.BlockThirdPersonCameraInput)
             {
-                if (!Camera.main) Debug.Log("Missing a Camera with the tag MainCamera, please add one.");
-                else
+                Camera activeCamera = gunController.GetActiveCamera();
+                if (activeCamera != null)
                 {
-                    cameraMain = Camera.main;
-                    cc.rotateTarget = cameraMain.transform;
+                    cameraMain = activeCamera;
+                    cc.rotateTarget = activeCamera.transform;
+                    cc.UpdateMoveDirection(activeCamera.transform);
                 }
+
+                return;
             }
 
+            UseThirdPersonCameraAsReference();
+
             if (cameraMain)
-            {
                 cc.UpdateMoveDirection(cameraMain.transform);
-            }
 
             if (tpCamera == null)
                 return;
@@ -121,6 +144,12 @@ namespace Invector.vCharacterController
 
         protected virtual void SprintInput()
         {
+            if (gunController != null && gunController.SuppressSprint)
+            {
+                cc.Sprint(false);
+                return;
+            }
+
             cc.Sprint(Input.GetKey(sprintInput));
         }
 

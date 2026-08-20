@@ -3,7 +3,7 @@ using UnityEditor;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
-namespace Invector.vCharacterController
+namespace Motiong.vCharacterController
 {
     public class vCreateBasicCharacterEditor : EditorWindow
     {
@@ -20,7 +20,7 @@ namespace Invector.vCharacterController
         /// <summary>
         /// 3rdPersonController Menu 
         /// </summary>    
-        [MenuItem("Invector/Basic Locomotion/Create Basic Controller", false, 0)]
+        [MenuItem("Motiong/Basic Locomotion/Create Basic Controller", false, 0)]
         public static void CreateNewCharacter()
         {
             GetWindow<vCreateBasicCharacterEditor>();

@@ -1,7 +1,7 @@
 ﻿using UnityEditor;
 using UnityEngine;
 
-namespace Invector.vCamera
+namespace Motiong.vCamera
 {
     [CustomEditor(typeof(vThirdPersonCamera))]
     [CanEditMultipleObjects]
@@ -30,7 +30,7 @@ namespace Invector.vCamera
             if (!skin) skin = Resources.Load("vSkin") as GUISkin;
             GUI.skin = skin;
 
-            GUILayout.BeginVertical("THIRD PERSON CAMERA LITE BY Invector", "window");
+            GUILayout.BeginVertical("THIRD PERSON CAMERA LITE BY Motiong", "window");
 
             GUILayout.Space(30);
 
