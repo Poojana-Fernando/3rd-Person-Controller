@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 namespace Motiong.vCharacterController
 {
@@ -82,6 +82,8 @@ namespace Motiong.vCharacterController
         }
         internal bool isGrounded { get; set; }
         internal bool isSprinting { get; set; }
+        internal bool forceWalkLocomotion { get; set; }
+        internal bool suppressUpperBodyLocomotion { get; set; }
         public bool stopMove { get; protected set; }
 
         internal float inputMagnitude;                      // sets the inputMagnitude to update the animations in the animator controller
@@ -161,6 +163,12 @@ namespace Motiong.vCharacterController
 
         public virtual void SetControllerMoveSpeed(vMovementSpeed speed)
         {
+            if (forceWalkLocomotion)
+            {
+                moveSpeed = Mathf.Lerp(moveSpeed, speed.walkSpeed, speed.movementSmooth * Time.deltaTime);
+                return;
+            }
+
             if (speed.walkByDefault)
                 moveSpeed = Mathf.Lerp(moveSpeed, isSprinting ? speed.runningSpeed : speed.walkSpeed, speed.movementSmooth * Time.deltaTime);
             else

@@ -6,21 +6,27 @@ public class ResidentEvilAimCamera : MonoBehaviour
     [Header("Anchor")]
     public Transform followTarget;
     public Transform spineAnchor;
-    public Vector3 anchorOffset;
-
-    [Header("Shoulder Camera")]
-    public float aimDistance = 2f;
-    public float shoulderSide = 0.55f;
-    public float shoulderHeight = 1.55f;
-    public float bodyTurnSmoothTime = 0.12f;
-    public float cameraPositionSmoothTime = 0.04f;
+    [Tooltip("Camera position relative to the player root (authored from scene placement).")]
+    public Vector3 localPositionOffset = new Vector3(0.85f, 1.75f, -0.83f);
+    [Tooltip("Starting horizontal look angle when aim syncs without a third-person camera.")]
+    public float defaultYaw = 182f;
 
     [Header("Look")]
     public float mouseSensitivityX = 2.5f;
     public float mouseSensitivityY = 2.5f;
     public float minPitch = -40f;
     public float maxPitch = 40f;
-    public float maxUpperBodyYaw = 30f;
+
+    [Header("Smoothing")]
+    public float rotationSmoothTime = 0.05f;
+
+    [Header("Transition")]
+    public float transitionDuration = 0.25f;
+
+    [Header("Collision")]
+    public LayerMask cameraCollisionMask = ~0;
+    public float cameraCollisionRadius = 0.2f;
+    public float crosshairMinDistance = 0.5f;
 
     [Header("Recoil")]
     public float recoilRecoverySpeed = 14f;
@@ -31,23 +37,30 @@ public class ResidentEvilAimCamera : MonoBehaviour
     private Camera _camera;
     private AudioListener _listener;
     private float _bodyYaw;
-    private float _upperBodyYawOffset;
-    private float _displayBodyYaw;
-    private float _bodyYawVelocity;
     private float _pitch;
     private float _recoilKick;
-    private Vector3 _displayPosition;
-    private Vector3 _positionVelocity;
+    private float _smoothedBodyYaw;
+    private float _smoothedPitch;
+    private float _bodyYawVelocity;
+    private float _pitchVelocity;
     private bool _active;
-    private bool _displayInitialized;
+    private bool _isClippingPlayer;
+    private float _enterBlend = 1f;
+    private Vector3 _enterBlendStartPos;
+    private Quaternion _enterBlendStartRot;
 
     public bool IsActive => _active;
+    public bool IsEnterBlending => _enterBlend < 1f;
+    public bool IsClippingPlayer => _isClippingPlayer;
     public Camera CameraComponent => _camera;
     public float Pitch => _pitch;
+    public float SmoothedPitch => _smoothedPitch;
+    public float AimPitch => _smoothedPitch + _recoilKick;
     public float BodyYaw => _bodyYaw;
-    public float DisplayBodyYaw => _displayBodyYaw;
-    public float UpperBodyYawOffset => _upperBodyYawOffset;
-    public float Yaw => _bodyYaw + _upperBodyYawOffset;
+    public float SmoothedBodyYaw => _smoothedBodyYaw;
+    public float UpperBodyYawOffset => 0f;
+    public float Yaw => _bodyYaw;
+    public Vector3 AimForward => transform.forward;
 
     private void Awake()
     {
@@ -69,36 +82,42 @@ public class ResidentEvilAimCamera : MonoBehaviour
             _listener.enabled = active;
 
         if (active)
-            SnapDisplayState();
-    }
-
-    public void SyncYaw(float yaw)
-    {
-        float bodyYaw = followTarget != null ? followTarget.eulerAngles.y : yaw;
-        float delta = Mathf.DeltaAngle(bodyYaw, yaw);
-
-        if (delta > maxUpperBodyYaw)
         {
-            _bodyYaw = yaw - maxUpperBodyYaw;
-            _upperBodyYawOffset = maxUpperBodyYaw;
-        }
-        else if (delta < -maxUpperBodyYaw)
-        {
-            _bodyYaw = yaw + maxUpperBodyYaw;
-            _upperBodyYawOffset = -maxUpperBodyYaw;
+            ApplyCameraTransformImmediate();
         }
         else
         {
-            _bodyYaw = bodyYaw;
-            _upperBodyYawOffset = delta;
+            _enterBlend = 1f;
+        }
+    }
+
+    public void BeginEnterBlend(Camera fromCamera, float duration)
+    {
+        transitionDuration = Mathf.Max(0.01f, duration);
+
+        if (fromCamera == null)
+        {
+            _enterBlend = 1f;
+            return;
         }
 
-        _pitch = 0f;
+        _enterBlend = 0f;
+        _enterBlendStartPos = fromCamera.transform.position;
+        _enterBlendStartRot = fromCamera.transform.rotation;
+        transform.SetPositionAndRotation(_enterBlendStartPos, _enterBlendStartRot);
+    }
+
+    public void SyncYaw(float yaw, float pitch = 0f)
+    {
+        _bodyYaw = yaw;
+        _pitch = pitch;
         _recoilKick = 0f;
 
         if (upperBodyAim != null)
-            upperBodyAim.CurrentPitch = 0f;
+            upperBodyAim.CurrentPitch = pitch;
 
+        SnapSmoothedValues();
+        ApplyCameraTransformImmediate();
         SyncUpperBodyAim();
     }
 
@@ -106,25 +125,8 @@ public class ResidentEvilAimCamera : MonoBehaviour
     {
         if (followTarget != null)
             SyncYaw(followTarget.eulerAngles.y);
-    }
-
-    public void SnapDisplayState()
-    {
-        _displayBodyYaw = _bodyYaw;
-        _bodyYawVelocity = 0f;
-        _positionVelocity = Vector3.zero;
-
-        if (followTarget != null)
-            _displayPosition = followTarget.position + GetBodyRotation(_displayBodyYaw) * GetLocalShoulderOffset();
-
-        _displayInitialized = followTarget != null;
-    }
-
-    public void ResetUpperBodyOffset()
-    {
-        _bodyYaw = Yaw;
-        _upperBodyYawOffset = 0f;
-        SyncUpperBodyAim();
+        else
+            SyncYaw(defaultYaw);
     }
 
     public void AddRecoilKick(float impulse)
@@ -134,10 +136,7 @@ public class ResidentEvilAimCamera : MonoBehaviour
 
     public Ray GetScreenCenterRay()
     {
-        if (_camera == null)
-            return new Ray(transform.position, transform.forward);
-
-        return _camera.ScreenPointToRay(new Vector3(Screen.width * 0.5f, Screen.height * 0.5f, 0f));
+        return new Ray(transform.position, transform.forward);
     }
 
     private void LateUpdate()
@@ -146,12 +145,19 @@ public class ResidentEvilAimCamera : MonoBehaviour
             return;
 
         HandleLookInput();
-        ApplyCameraTransform();
+        ApplyCameraRotation();
+        SyncFollowTargetToLookYaw();
+
+        Vector3 targetPosition = ResolveTargetPosition();
+        Quaternion targetRotation = Quaternion.Euler(_smoothedPitch + _recoilKick, _smoothedBodyYaw, 0f);
+        ApplyTransitionOrSnap(targetPosition, targetRotation);
+
+        SyncUpperBodyAim();
     }
 
     private void HandleLookInput()
     {
-        ApplyHorizontalLook(Input.GetAxis("Mouse X") * mouseSensitivityX);
+        _bodyYaw += Input.GetAxis("Mouse X") * mouseSensitivityX;
         _pitch -= Input.GetAxis("Mouse Y") * mouseSensitivityY;
 
         if (upperBodyAim != null)
@@ -159,30 +165,7 @@ public class ResidentEvilAimCamera : MonoBehaviour
         else
             _pitch = Mathf.Clamp(_pitch, minPitch, maxPitch);
 
-        if (upperBodyAim != null)
-            upperBodyAim.CurrentPitch = _pitch;
-
         _recoilKick = Mathf.MoveTowards(_recoilKick, 0f, recoilRecoverySpeed * Time.deltaTime);
-    }
-
-    private void ApplyHorizontalLook(float deltaYaw)
-    {
-        _upperBodyYawOffset += deltaYaw;
-
-        if (_upperBodyYawOffset > maxUpperBodyYaw)
-        {
-            float spill = _upperBodyYawOffset - maxUpperBodyYaw;
-            _bodyYaw += spill;
-            _upperBodyYawOffset = maxUpperBodyYaw;
-        }
-        else if (_upperBodyYawOffset < -maxUpperBodyYaw)
-        {
-            float spill = _upperBodyYawOffset + maxUpperBodyYaw;
-            _bodyYaw += spill;
-            _upperBodyYawOffset = -maxUpperBodyYaw;
-        }
-
-        SyncUpperBodyAim();
     }
 
     private void SyncUpperBodyAim()
@@ -190,50 +173,136 @@ public class ResidentEvilAimCamera : MonoBehaviour
         if (upperBodyAim == null)
             return;
 
-        upperBodyAim.CurrentYawOffset = _upperBodyYawOffset;
+        upperBodyAim.CurrentPitch = AimPitch;
     }
 
-    private void ApplyCameraTransform()
+    public void SyncFollowTargetToLookYaw()
     {
         if (followTarget == null)
             return;
 
-        _displayBodyYaw = Mathf.SmoothDampAngle(
-            _displayBodyYaw,
-            _bodyYaw,
-            ref _bodyYawVelocity,
-            bodyTurnSmoothTime);
-
-        float aimYaw = _displayBodyYaw + _upperBodyYawOffset;
-        float finalPitch = _pitch + _recoilKick;
-        transform.rotation = Quaternion.Euler(finalPitch, aimYaw, 0f);
-
-        Vector3 targetPosition = followTarget.position + GetBodyRotation(_displayBodyYaw) * GetLocalShoulderOffset();
-        if (!_displayInitialized)
-        {
-            _displayPosition = targetPosition;
-            _displayInitialized = true;
-        }
-        else
-        {
-            _displayPosition = Vector3.SmoothDamp(
-                _displayPosition,
-                targetPosition,
-                ref _positionVelocity,
-                cameraPositionSmoothTime);
-        }
-
-        transform.position = _displayPosition;
+        followTarget.rotation = Quaternion.Euler(0f, _smoothedBodyYaw, 0f);
     }
 
-    private Vector3 GetLocalShoulderOffset()
+    public void RefreshPosition()
     {
-        return new Vector3(shoulderSide, shoulderHeight, -Mathf.Max(0.1f, aimDistance));
+        ApplyCameraPosition();
     }
 
-    private static Quaternion GetBodyRotation(float yaw)
+    private void ApplySnappedRotation()
     {
-        return Quaternion.Euler(0f, yaw, 0f);
+        transform.rotation = Quaternion.Euler(_smoothedPitch + _recoilKick, _smoothedBodyYaw, 0f);
+    }
+
+    private void SnapSmoothedValues()
+    {
+        _smoothedBodyYaw = _bodyYaw;
+        _smoothedPitch = _pitch;
+        _bodyYawVelocity = 0f;
+        _pitchVelocity = 0f;
+    }
+
+    private Vector3 ComputeDesiredPosition()
+    {
+        if (followTarget == null)
+            return transform.position;
+
+        return followTarget.TransformPoint(localPositionOffset);
+    }
+
+    private Vector3 ResolveCameraPosition(Vector3 pivot, Vector3 desiredPosition)
+    {
+        Vector3 toDesired = desiredPosition - pivot;
+        float desiredDistance = toDesired.magnitude;
+
+        if (desiredDistance <= 0.001f)
+        {
+            _isClippingPlayer = true;
+            return desiredPosition;
+        }
+
+        Vector3 direction = toDesired / desiredDistance;
+        float resolvedDistance = desiredDistance;
+
+        RaycastHit[] hits = Physics.SphereCastAll(
+            pivot,
+            cameraCollisionRadius,
+            direction,
+            desiredDistance,
+            cameraCollisionMask,
+            QueryTriggerInteraction.Ignore);
+
+        for (int i = 0; i < hits.Length; i++)
+        {
+            if (IsIgnoredCollider(hits[i].collider))
+                continue;
+
+            resolvedDistance = Mathf.Min(
+                resolvedDistance,
+                Mathf.Max(0.05f, hits[i].distance - cameraCollisionRadius));
+        }
+
+        _isClippingPlayer = resolvedDistance < crosshairMinDistance;
+        return pivot + direction * resolvedDistance;
+    }
+
+    private bool IsIgnoredCollider(Collider collider)
+    {
+        if (collider == null || followTarget == null)
+            return false;
+
+        return collider.transform == followTarget || collider.transform.IsChildOf(followTarget);
+    }
+
+    private void ApplyTransitionOrSnap(Vector3 targetPosition, Quaternion targetRotation)
+    {
+        if (_enterBlend >= 1f)
+        {
+            transform.SetPositionAndRotation(targetPosition, targetRotation);
+            return;
+        }
+
+        _enterBlend = Mathf.MoveTowards(_enterBlend, 1f, Time.deltaTime / transitionDuration);
+        float t = SmoothStep(_enterBlend);
+        transform.position = Vector3.Lerp(_enterBlendStartPos, targetPosition, t);
+        transform.rotation = Quaternion.Slerp(_enterBlendStartRot, targetRotation, t);
+    }
+
+    private static float SmoothStep(float t)
+    {
+        return t * t * (3f - 2f * t);
+    }
+
+    private Vector3 ResolveTargetPosition()
+    {
+        if (followTarget == null)
+            return transform.position;
+
+        Vector3 desiredPosition = ComputeDesiredPosition();
+        return ResolveCameraPosition(followTarget.position, desiredPosition);
+    }
+
+    private void ApplyCameraTransformImmediate()
+    {
+        SnapSmoothedValues();
+        Vector3 targetPosition = ResolveTargetPosition();
+        Quaternion targetRotation = Quaternion.Euler(_smoothedPitch + _recoilKick, _smoothedBodyYaw, 0f);
+        transform.SetPositionAndRotation(targetPosition, targetRotation);
+    }
+
+    private void ApplyCameraPosition()
+    {
+        if (followTarget == null)
+            return;
+
+        Vector3 desiredPosition = ComputeDesiredPosition();
+        transform.position = ResolveCameraPosition(followTarget.position, desiredPosition);
+    }
+
+    private void ApplyCameraRotation()
+    {
+        _smoothedBodyYaw = Mathf.SmoothDampAngle(_smoothedBodyYaw, _bodyYaw, ref _bodyYawVelocity, rotationSmoothTime);
+        _smoothedPitch = Mathf.SmoothDamp(_smoothedPitch, _pitch, ref _pitchVelocity, rotationSmoothTime);
     }
 
     private void AutoAssignReferences()
@@ -254,6 +323,9 @@ public class ResidentEvilAimCamera : MonoBehaviour
             upperBodyAim = followTarget.GetComponent<UpperBodyAim>();
 
         if (followTarget != null)
+        {
             _bodyYaw = followTarget.eulerAngles.y;
+            SnapSmoothedValues();
+        }
     }
 }

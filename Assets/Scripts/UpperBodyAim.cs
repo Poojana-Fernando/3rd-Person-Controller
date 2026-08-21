@@ -1,6 +1,9 @@
 using UnityEngine;
 
-[DefaultExecutionOrder(60)]
+// RigBuilder evaluates constraints during the Animator's PlayableGraph update,
+// which finishes before LateUpdate. High execution order keeps spine offsets applied
+// after rig solve and other LateUpdate scripts (camera 70 / gun controller 75).
+[DefaultExecutionOrder(500)]
 public class UpperBodyAim : MonoBehaviour
 {
     [Header("Bones")]
@@ -16,6 +19,10 @@ public class UpperBodyAim : MonoBehaviour
     [SerializeField] private float bendSmoothTime = 0.08f;
     [SerializeField] private float blendSpeed = 8f;
 
+    [Header("Aim Pose")]
+    [Tooltip("Spine yaw twist while aiming. Negative = left (shows right-hand gun on shoulder cam). Positive = right.")]
+    [SerializeField] private float aimSpineYawOffset = -14f;
+
     [Header("Recoil")]
     [SerializeField] private float recoilStiffness = 120f;
     [SerializeField] private float recoilDamping = 16f;
@@ -25,13 +32,13 @@ public class UpperBodyAim : MonoBehaviour
     private float _blendWeight;
     private float _smoothedPitch;
     private float _pitchVelocity;
-    private float _smoothedYawOffset;
-    private float _yawVelocity;
     private float _recoilAngle;
     private float _recoilVelocity;
+    private Quaternion _middleBase = Quaternion.identity;
+    private Quaternion _upperBase = Quaternion.identity;
+    private int _baseFrame = -1;
 
     public float CurrentPitch { get; set; }
-    public float CurrentYawOffset { get; set; }
 
     public float MinPitch => minPitch;
     public float MaxPitch => maxPitch;
@@ -41,18 +48,27 @@ public class UpperBodyAim : MonoBehaviour
         AutoAssignBones();
     }
 
+    private void OnEnable()
+    {
+        Application.onBeforeRender += OnBeforeRender;
+    }
+
+    private void OnDisable()
+    {
+        Application.onBeforeRender -= OnBeforeRender;
+        ClearBoneOffsets();
+    }
+
     public void SetAimingActive(bool active)
     {
         _targetBlend = active ? 1f : 0f;
 
         if (!active)
         {
+            ClearBoneOffsets();
             CurrentPitch = 0f;
-            CurrentYawOffset = 0f;
             _smoothedPitch = 0f;
             _pitchVelocity = 0f;
-            _smoothedYawOffset = 0f;
-            _yawVelocity = 0f;
             _recoilAngle = 0f;
             _recoilVelocity = 0f;
         }
@@ -70,43 +86,96 @@ public class UpperBodyAim : MonoBehaviour
 
     private void LateUpdate()
     {
+        ApplySpineOffsets();
+    }
+
+    private void OnBeforeRender()
+    {
+        if (_blendWeight <= 0.001f && Mathf.Abs(_recoilAngle) < 0.01f)
+            return;
+
+        ApplySpineOffsets();
+    }
+
+    private void ApplySpineOffsets()
+    {
         if (spineUpper == null)
             return;
 
-        _blendWeight = Mathf.MoveTowards(_blendWeight, _targetBlend, blendSpeed * Time.deltaTime);
-        UpdateRecoilSpring();
+        // The Animator rewrites both spine bones every frame, so the pose captured here is
+        // the animated one. Both passes of the same frame rebuild from that cached base
+        // instead of trying to subtract offsets that the Animator already discarded.
+        if (_baseFrame != Time.frameCount)
+            AdvanceFrameState();
 
         if (_blendWeight <= 0.001f && Mathf.Abs(_recoilAngle) < 0.01f)
             return;
 
+        float pitchBlend = _smoothedPitch * _blendWeight;
+        float yawBlend = aimSpineYawOffset * _blendWeight;
+
+        if (spineMiddle != null)
+        {
+            ApplyBoneOffset(
+                spineMiddle,
+                _middleBase,
+                applySpinePitch ? pitchBlend * middlePitchWeight : 0f,
+                yawBlend * middlePitchWeight);
+        }
+
+        float upperPitch = applySpinePitch
+            ? pitchBlend * upperPitchWeight + _recoilAngle
+            : _recoilAngle;
+
+        ApplyBoneOffset(spineUpper, _upperBase, upperPitch, yawBlend);
+    }
+
+    private void AdvanceFrameState()
+    {
+        _baseFrame = Time.frameCount;
+
+        if (spineMiddle != null)
+            _middleBase = spineMiddle.localRotation;
+
+        _upperBase = spineUpper.localRotation;
+
+        _blendWeight = Mathf.MoveTowards(_blendWeight, _targetBlend, blendSpeed * Time.deltaTime);
+        UpdateRecoilSpring();
+
         float clampedPitch = Mathf.Clamp(CurrentPitch, minPitch, maxPitch);
         _smoothedPitch = Mathf.SmoothDamp(_smoothedPitch, clampedPitch, ref _pitchVelocity, bendSmoothTime);
-        _smoothedYawOffset = Mathf.SmoothDamp(_smoothedYawOffset, CurrentYawOffset, ref _yawVelocity, bendSmoothTime);
+    }
 
-        float pitchBlend = _smoothedPitch * _blendWeight;
-        float yawBlend = _smoothedYawOffset * _blendWeight;
-        float middlePitch = pitchBlend * middlePitchWeight;
-        float upperPitch = pitchBlend * upperPitchWeight + _recoilAngle;
-        float middleYaw = yawBlend * middlePitchWeight;
-        float upperYaw = yawBlend * upperPitchWeight;
+    // Offsets are built from the player root axes so the bend direction does not depend on
+    // how the skeleton's spine bones happen to be oriented, then converted into the bone's
+    // parent space so each bone still inherits its parent's bend.
+    private void ApplyBoneOffset(Transform bone, Quaternion baseLocalRotation, float pitch, float yaw)
+    {
+        Quaternion offset = Quaternion.identity;
 
-        if (applySpinePitch && spineMiddle != null)
-        {
-            Quaternion animatedMiddle = spineMiddle.localRotation;
-            spineMiddle.localRotation = animatedMiddle * Quaternion.Euler(middlePitch, middleYaw, 0f);
-        }
-        else if (spineMiddle != null && Mathf.Abs(middleYaw) > 0.001f)
-        {
-            Quaternion animatedMiddle = spineMiddle.localRotation;
-            spineMiddle.localRotation = animatedMiddle * Quaternion.Euler(0f, middleYaw, 0f);
-        }
+        if (Mathf.Abs(pitch) > 0.001f)
+            offset = Quaternion.AngleAxis(pitch, ToParentSpace(bone, transform.right));
 
-        if (spineUpper != null)
-        {
-            Quaternion animatedUpper = spineUpper.localRotation;
-            if (applySpinePitch || Mathf.Abs(upperYaw) > 0.001f || Mathf.Abs(_recoilAngle) > 0.001f)
-                spineUpper.localRotation = animatedUpper * Quaternion.Euler(upperPitch, upperYaw, 0f);
-        }
+        if (Mathf.Abs(yaw) > 0.001f)
+            offset = Quaternion.AngleAxis(yaw, ToParentSpace(bone, transform.up)) * offset;
+
+        bone.localRotation = offset * baseLocalRotation;
+    }
+
+    private static Vector3 ToParentSpace(Transform bone, Vector3 worldAxis)
+    {
+        return bone.parent != null
+            ? bone.parent.InverseTransformDirection(worldAxis).normalized
+            : worldAxis;
+    }
+
+    private void ClearBoneOffsets()
+    {
+        // No transform restore needed: the Animator overwrites both spine bones on its next
+        // evaluation, so dropping the cached base is enough to stop contributing.
+        _middleBase = Quaternion.identity;
+        _upperBase = Quaternion.identity;
+        _baseFrame = -1;
     }
 
     private void UpdateRecoilSpring()

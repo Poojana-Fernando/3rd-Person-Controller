@@ -1,4 +1,4 @@
-﻿
+
 using UnityEngine;
 
 namespace Motiong.vCharacterController
@@ -23,6 +23,16 @@ namespace Motiong.vCharacterController
             animator.SetBool(vAnimatorParameters.IsSprinting, isSprinting);
             animator.SetBool(vAnimatorParameters.IsGrounded, isGrounded);
             animator.SetFloat(vAnimatorParameters.GroundDistance, groundDistance);
+
+            if (suppressUpperBodyLocomotion)
+            {
+                float walkMag = stopMove ? 0f : inputMagnitude;
+                animator.SetFloat(vAnimatorParameters.InputHorizontal, 0f, ActiveSpeed.animationSmooth, Time.deltaTime);
+                animator.SetFloat(vAnimatorParameters.InputVertical, walkMag, ActiveSpeed.animationSmooth, Time.deltaTime);
+                animator.SetFloat(vAnimatorParameters.InputMagnitude, walkMag, ActiveSpeed.animationSmooth, Time.deltaTime);
+                return;
+            }
+
             animator.SetFloat(vAnimatorParameters.InputHorizontal, stopMove ? 0 : horizontalSpeed, ActiveSpeed.animationSmooth, Time.deltaTime);
             animator.SetFloat(vAnimatorParameters.InputVertical, stopMove ? 0 : verticalSpeed, ActiveSpeed.animationSmooth, Time.deltaTime);
             animator.SetFloat(vAnimatorParameters.InputMagnitude, stopMove ? 0f : inputMagnitude, ActiveSpeed.animationSmooth, Time.deltaTime);
@@ -46,6 +56,21 @@ namespace Motiong.vCharacterController
             }
 
             var newInput = new Vector2(verticalSpeed, horizontalSpeed);
+
+            if (suppressUpperBodyLocomotion)
+            {
+                horizontalSpeed = 0f;
+                float walkMag = stopMove ? 0f : Mathf.Clamp(newInput.magnitude, 0, walkSpeed);
+                verticalSpeed = walkMag;
+                inputMagnitude = walkMag;
+                return;
+            }
+
+            if (forceWalkLocomotion)
+            {
+                inputMagnitude = Mathf.Clamp(newInput.magnitude, 0, walkSpeed);
+                return;
+            }
 
             if (speed.walkByDefault)
                 inputMagnitude = Mathf.Clamp(newInput.magnitude, 0, isSprinting ? runningSpeed : walkSpeed);

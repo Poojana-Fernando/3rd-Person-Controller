@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 namespace Motiong.vCharacterController
 {
@@ -30,7 +30,6 @@ namespace Motiong.vCharacterController
             gunController = GetComponent<PlayerGunController>();
             InitilizeController();
             InitializeTpCamera();
-            UseThirdPersonCameraAsReference();
         }
 
         protected virtual void FixedUpdate()
@@ -91,22 +90,6 @@ namespace Motiong.vCharacterController
             cc.input.z = Input.GetAxis(verticallInput);
         }
 
-        public void UseThirdPersonCameraAsReference()
-        {
-            if (tpCamera == null)
-                tpCamera = FindFirstObjectByType<vThirdPersonCamera>();
-
-            if (tpCamera == null)
-                return;
-
-            Camera thirdPersonCamera = tpCamera.GetComponent<Camera>();
-            if (thirdPersonCamera == null)
-                return;
-
-            cameraMain = thirdPersonCamera;
-            cc.rotateTarget = thirdPersonCamera.transform;
-        }
-
         protected virtual void CameraInput()
         {
             if (gunController != null && gunController.BlockThirdPersonCameraInput)
@@ -122,10 +105,26 @@ namespace Motiong.vCharacterController
                 return;
             }
 
-            UseThirdPersonCameraAsReference();
+            Camera thirdPersonCam = tpCamera != null ? tpCamera.GetComponent<Camera>() : null;
+            if (thirdPersonCam != null)
+            {
+                cameraMain = thirdPersonCam;
+                cc.rotateTarget = thirdPersonCam.transform;
+            }
+            else if (!cameraMain)
+            {
+                if (!Camera.main) Debug.Log("Missing a Camera with the tag MainCamera, please add one.");
+                else
+                {
+                    cameraMain = Camera.main;
+                    cc.rotateTarget = cameraMain.transform;
+                }
+            }
 
             if (cameraMain)
+            {
                 cc.UpdateMoveDirection(cameraMain.transform);
+            }
 
             if (tpCamera == null)
                 return;
@@ -138,6 +137,9 @@ namespace Motiong.vCharacterController
 
         protected virtual void StrafeInput()
         {
+            if (gunController != null && gunController.BlockStrafeToggle)
+                return;
+
             if (Input.GetKeyDown(strafeInput))
                 cc.Strafe();
         }

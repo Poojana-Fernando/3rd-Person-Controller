@@ -20,12 +20,14 @@ public class PlayerGunController : MonoBehaviour
     [SerializeField] private AudioListener thirdPersonAudioListener;
     [SerializeField] private Transform headAimTarget;
     [SerializeField] private Rig headAimRig;
-    [SerializeField] private float headAimWeight = 0.2f;
-    [SerializeField] private float headAimTargetDistance = 8f;
+    [SerializeField] private float headAimWeight = 0.35f;
 
     [Header("Animator")]
     [SerializeField] private string gunLayerName = "Gun Layer";
     [SerializeField] private float gunLayerBlendSpeed = 8f;
+
+    [Header("Camera")]
+    [SerializeField] private float cameraTransitionDuration = 0.25f;
 
     [Header("Combat")]
     [SerializeField] private float fireRateRpm = 600f;
@@ -56,14 +58,16 @@ public class PlayerGunController : MonoBehaviour
     private bool _isEquipped;
     private bool _isAiming;
     private bool _strafeBeforeAim;
+    private bool _strafeBeforeGun;
     private bool _lockRotationBeforeAim;
+    private RigBuilder _rigBuilder;
+    private MultiAimConstraint _headAimConstraint;
 
     public bool IsEquipped => _isEquipped;
     public bool IsAiming => _isAiming;
-    public float MaxRange => maxRange;
-    public LayerMask HitMask => hitMask;
     public bool BlockThirdPersonCameraInput => _isAiming;
-    public bool SuppressSprint => _isEquipped && _isAiming;
+    public bool SuppressSprint => _isAiming;
+    public bool BlockStrafeToggle => _isEquipped && !_isAiming;
 
     public Camera GetActiveCamera()
     {
@@ -83,14 +87,33 @@ public class PlayerGunController : MonoBehaviour
         _animator = GetComponent<Animator>();
 
         AutoAssignReferences();
+        _rigBuilder = GetComponent<RigBuilder>();
+        if (headAimRig != null)
+            _headAimConstraint = headAimRig.GetComponentInChildren<MultiAimConstraint>(true);
+
         CacheGunLayerIndex();
         SetEquipped(false, true);
         SetHeadAimActive(false);
     }
 
+    private void Start()
+    {
+        if (_headAimConstraint != null)
+            _headAimConstraint.enabled = false;
+
+        if (_rigBuilder != null)
+        {
+            _rigBuilder.enabled = false;
+            _rigBuilder.Build();
+        }
+    }
+
     private void Update()
     {
         HandleWeaponInput();
+        ApplyAimWalkLocomotion();
+        ApplyGunHoldLocomotionRules();
+        RefreshGunLayerTarget();
         UpdateGunLayerWeight();
         UpdateAnimatorParameters();
         UpdateVisibility();
@@ -99,23 +122,23 @@ public class PlayerGunController : MonoBehaviour
 
     private void LateUpdate()
     {
-        UpdateAimingBodyRotation();
         UpdateHeadAimTarget();
     }
 
     private void AutoAssignReferences()
     {
-        Transform rightWrist = transform.Find("guard/Armature/root ground/root hip/spine lower/spine middle/spine upper/arm right shoulder 1/arm right shoulder 2/arm right elbow/arm right wrist");
-        Transform spineLower = transform.Find("guard/Armature/root ground/root hip/spine lower");
-        Transform gunParent = rightWrist != null ? rightWrist : spineLower;
-
-        if (gunParent != null)
+        const string WristPath = "guard/Armature/root ground/root hip/spine lower/spine middle/spine upper/arm right shoulder 1/arm right shoulder 2/arm right elbow/arm right wrist";
+        Transform rightWrist = transform.Find(WristPath);
+        if (rightWrist == null)
         {
-            if (holdGun == null)
-                holdGun = gunParent.Find("HoldGun")?.gameObject;
-            if (aimGun == null)
-                aimGun = gunParent.Find("AimGun")?.gameObject;
+            Debug.LogError($"PlayerGunController: right wrist bone not found at '{WristPath}'. Gun will not be attached.", this);
+            return;
         }
+
+        if (holdGun == null)
+            holdGun = rightWrist.Find("HoldGun")?.gameObject;
+        if (aimGun == null)
+            aimGun = rightWrist.Find("AimGun")?.gameObject;
 
         if (muzzle == null && aimGun != null)
             muzzle = aimGun.transform.Find("muzzle");
@@ -211,7 +234,13 @@ public class PlayerGunController : MonoBehaviour
             return;
 
         _isEquipped = equipped;
-        _targetGunLayerWeight = equipped ? 1f : 0f;
+
+        if (_controller != null && equipped)
+            _strafeBeforeGun = _controller.isStrafing;
+        else if (_controller != null && !equipped && !_isAiming)
+            _controller.isStrafing = _strafeBeforeGun;
+
+        RefreshGunLayerTarget();
 
         if (!equipped)
             SetAiming(false, true);
@@ -240,10 +269,11 @@ public class PlayerGunController : MonoBehaviour
             }
             else if (wasAiming)
             {
-                _controller.isStrafing = _strafeBeforeAim;
                 _controller.lockRotation = _lockRotationBeforeAim;
             }
         }
+
+        RefreshGunLayerTarget();
 
         SetHeadAimActive(aiming);
 
@@ -252,29 +282,29 @@ public class PlayerGunController : MonoBehaviour
             if (aiming)
             {
                 if (thirdPersonCamera != null)
-                    aimCamera.SyncYaw(thirdPersonCamera.HorizontalAngle);
+                    aimCamera.SyncYaw(thirdPersonCamera.HorizontalAngle, thirdPersonCamera.VerticalAngle);
                 else
                     aimCamera.SyncYawFromTarget();
 
-                aimCamera.SnapDisplayState();
+                aimCamera.SetAimCameraActive(true);
+                aimCamera.BeginEnterBlend(thirdPersonCameraComponent, cameraTransitionDuration);
             }
-
-            aimCamera.SetAimCameraActive(aiming);
+            else
+            {
+                aimCamera.SetAimCameraActive(false);
+            }
         }
 
         if (aiming && aimCamera != null)
-            transform.rotation = Quaternion.Euler(0f, aimCamera.DisplayBodyYaw, 0f);
+            aimCamera.SyncFollowTargetToLookYaw();
 
-        if (!aiming && wasAiming && aimCamera != null)
+        if (!aiming && wasAiming && thirdPersonCamera != null && aimCamera != null)
         {
-            transform.rotation = Quaternion.Euler(0f, aimCamera.Yaw, 0f);
-            aimCamera.ResetUpperBodyOffset();
-
-            if (thirdPersonCamera != null)
-                thirdPersonCamera.SyncRotation(aimCamera.Yaw, aimCamera.Pitch);
-
-            if (_input != null)
-                _input.UseThirdPersonCameraAsReference();
+            thirdPersonCamera.SyncRotation(aimCamera.Yaw, aimCamera.Pitch);
+            thirdPersonCamera.BeginExitBlend(
+                aimCamera.transform.position,
+                aimCamera.transform.rotation,
+                cameraTransitionDuration);
         }
 
         if (upperBodyAim != null)
@@ -285,6 +315,32 @@ public class PlayerGunController : MonoBehaviour
 
         if (thirdPersonAudioListener != null)
             thirdPersonAudioListener.enabled = !aiming;
+    }
+
+    private void ApplyAimWalkLocomotion()
+    {
+        if (_controller == null)
+            return;
+
+        _controller.forceWalkLocomotion = _isAiming;
+        _controller.suppressUpperBodyLocomotion = _isAiming;
+
+        if (_isAiming)
+            _controller.isSprinting = false;
+    }
+
+    private void ApplyGunHoldLocomotionRules()
+    {
+        if (_controller == null || !_isEquipped || _isAiming)
+            return;
+
+        _controller.isStrafing = false;
+        _controller.lockRotation = false;
+    }
+
+    private void RefreshGunLayerTarget()
+    {
+        _targetGunLayerWeight = _isEquipped ? 1f : 0f;
     }
 
     private void UpdateGunLayerWeight()
@@ -315,15 +371,7 @@ public class PlayerGunController : MonoBehaviour
             aimGun.SetActive(_isEquipped && _isAiming);
 
         if (crosshair != null)
-            crosshair.SetActive(_isEquipped && _isAiming);
-    }
-
-    private void UpdateAimingBodyRotation()
-    {
-        if (!_isAiming || aimCamera == null)
-            return;
-
-        transform.rotation = Quaternion.Euler(0f, aimCamera.DisplayBodyYaw, 0f);
+            crosshair.SetActive(_isEquipped && _isAiming && (aimCamera == null || !aimCamera.IsClippingPlayer));
     }
 
     private void UpdateHeadAimTarget()
@@ -331,15 +379,24 @@ public class PlayerGunController : MonoBehaviour
         if (!_isAiming || headAimTarget == null || aimCamera == null)
             return;
 
-        Vector3 headOrigin = transform.position + Vector3.up * 1.6f;
-        Vector3 pitchOnlyDirection = Quaternion.Euler(aimCamera.Pitch, aimCamera.BodyYaw, 0f) * Vector3.forward;
-        headAimTarget.position = headOrigin + pitchOnlyDirection * headAimTargetDistance;
+        if (TryGetAimPoint(out Vector3 aimPoint))
+            headAimTarget.position = aimPoint;
     }
 
     private void SetHeadAimActive(bool active)
     {
+        if (_headAimConstraint != null)
+            _headAimConstraint.enabled = active;
+
         if (headAimRig != null)
             headAimRig.weight = active ? headAimWeight : 0f;
+
+        if (_rigBuilder != null)
+        {
+            _rigBuilder.enabled = active;
+            if (active)
+                _rigBuilder.Build();
+        }
     }
 
     private void HandleAutomaticFire()

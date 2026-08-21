@@ -1,4 +1,4 @@
-﻿using Motiong;
+using Motiong;
 using UnityEngine;
 
 public class vThirdPersonCamera : MonoBehaviour
@@ -21,6 +21,9 @@ public class vThirdPersonCamera : MonoBehaviour
     public float yMouseSensitivity = 3f;
     public float yMinLimit = -40f;
     public float yMaxLimit = 80f;
+
+    [Header("Transition")]
+    public float transitionDuration = 0.25f;
 
     #endregion
 
@@ -57,6 +60,9 @@ public class vThirdPersonCamera : MonoBehaviour
     private float cullingMinDist = 0.1f;
     private float _distanceVelocity;
     private float _heightVelocity;
+    private float _exitBlend = 1f;
+    private Vector3 _exitBlendStartPos;
+    private Quaternion _exitBlendStartRot;
     private const float MinCameraDistance = 0.35f;
     private const float CullingSmoothTime = 0.12f;
 
@@ -143,6 +149,16 @@ public class vThirdPersonCamera : MonoBehaviour
 
     public float HorizontalAngle => mouseX;
     public float VerticalAngle => mouseY;
+    public bool IsExitBlending => _exitBlend < 1f;
+
+    public void BeginExitBlend(Vector3 worldPosition, Quaternion worldRotation, float duration)
+    {
+        transitionDuration = Mathf.Max(0.01f, duration);
+        _exitBlend = 0f;
+        _exitBlendStartPos = worldPosition;
+        _exitBlendStartRot = worldRotation;
+        transform.SetPositionAndRotation(worldPosition, worldRotation);
+    }
 
     public void RotateCamera(float x, float y)
     {
@@ -244,7 +260,22 @@ public class vThirdPersonCamera : MonoBehaviour
         if (lookDirection.sqrMagnitude > 0.0001f)
             transform.rotation = Quaternion.LookRotation(lookDirection);
 
+        if (_exitBlend < 1f)
+        {
+            Vector3 orbitPosition = transform.position;
+            Quaternion orbitRotation = transform.rotation;
+            _exitBlend = Mathf.MoveTowards(_exitBlend, 1f, Time.deltaTime / transitionDuration);
+            float t = SmoothStep(_exitBlend);
+            transform.position = Vector3.Lerp(_exitBlendStartPos, orbitPosition, t);
+            transform.rotation = Quaternion.Slerp(_exitBlendStartRot, orbitRotation, t);
+        }
+
         movementSpeed = Vector2.zero;
+    }
+
+    private static float SmoothStep(float t)
+    {
+        return t * t * (3f - 2f * t);
     }
 
     /// <summary>
