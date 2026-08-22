@@ -122,7 +122,20 @@ InitTestScene*.unity*
 
 # Large local art packs (keep on disk; do not push)
 /Assets/Guns/
+/Assets/Guns.meta
 /Assets/character-with-animation/
+/Assets/character-with-animation.meta
 /Assets/BloodDecalsAndEffects/
+/Assets/BloodDecalsAndEffects.meta
 /Assets/gun1/textures/
+/Assets/Animations/Running Slide.fbx
+/Assets/Animations/Running Slide.fbx.meta
+/Assets/Running Slide.fbx
+/Assets/Running Slide.fbx.meta
+/Assets/Spoiled Unknown/XtremeFPS/Weapon/Textures/
+/Assets/Spoiled Unknown/XtremeFPS/Weapon/Models/
+/Assets/Spoiled Unknown/XtremeFPS/Weapon/Materials/HDRP/
+/Assets/Spoiled Unknown/XtremeFPS/Weapon/User Interfaces/
+/Assets/Spoiled Unknown/XtremeFPS/Documentation.pdf
+/Assets/Spoiled Unknown/XtremeFPS/Documentation.pdf.meta
 
