@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 094e76e620df5714eb3946120657e1f6
+timeCreated: 1473687979
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 282203
+  packageName: 'XtremeFPS: First Person Controller'
+  packageVersion: 1.1.0
+  assetPath: Assets/Spoiled Unknown/XtremeFPS/Weapon/Materials/URP/BulletDecalMetal.mat
+  uploadId: 688664

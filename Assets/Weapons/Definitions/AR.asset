@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d67b74e29a0e75842b23ab329a008c63, type: 3}
+  m_Name: AR
+  m_EditorClassIdentifier: Assembly-CSharp::WeaponDefinition
+  displayName: AR
+  slot: 4
+  visualKey: AR
+  weaponAimStyle: 0
+  holdPrefab: {fileID: 0}
+  aimPrefab: {fileID: 0}
+  handLocalPosition: {x: 0, y: 0, z: 0}
+  handLocalEuler: {x: 0, y: 0, z: 0}
+  handLocalScale: {x: 1, y: 1, z: 1}
+  muzzleChildName: muzzle
+  isAutomatic: 1
+  fireRateRpm: 600
+  damage: 14
+  maxRange: 120
+  pelletsPerShot: 1
+  spreadDegrees: 0.5
+  tracerSpeed: 140
+  recoilShoulderImpulse: 2.2
+  recoilCameraKick: 0.7
+  fireClip: {fileID: 8300000, guid: 44b6c39ee8df15a44aba4438bd084f5d, type: 3}
+  tracerPrefab: {fileID: 1660800468149884, guid: afc9c0a592c2d3e408e67df46bacd613, type: 3}
+  muzzleFlashPrefab: {fileID: 1000010254994808, guid: 9defeac88977c0d448aa4541073ee9e4, type: 3}
+  muzzleFlashScale: 1
+  hitPrefab: {fileID: 1000010355441670, guid: 02a509a7fa70ed740ba4197e20c5d32d, type: 3}
+  decalPrefab: {fileID: 0}

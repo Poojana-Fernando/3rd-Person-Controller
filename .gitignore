@@ -110,3 +110,19 @@ InitTestScene*.unity*
 /.cursor/
 *.zip
 *.zip.meta
+
+# Local player builds
+/Game/
+
+# Unity Performance Testing auto-generated
+/Assets/Resources/PerformanceTestRunInfo.json
+/Assets/Resources/PerformanceTestRunInfo.json.meta
+/Assets/Resources/PerformanceTestRunSettings.json
+/Assets/Resources/PerformanceTestRunSettings.json.meta
+
+# Large local art packs (keep on disk; do not push)
+/Assets/Guns/
+/Assets/character-with-animation/
+/Assets/BloodDecalsAndEffects/
+/Assets/gun1/textures/
+

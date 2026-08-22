@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d67b74e29a0e75842b23ab329a008c63, type: 3}
+  m_Name: AK47
+  m_EditorClassIdentifier: Assembly-CSharp::WeaponDefinition
+  displayName: AK-47
+  slot: 1
+  visualKey: AK
+  weaponAimStyle: 0
+  holdPrefab: {fileID: 0}
+  aimPrefab: {fileID: 0}
+  handLocalPosition: {x: 0, y: 0, z: 0}
+  handLocalEuler: {x: 0, y: 0, z: 0}
+  handLocalScale: {x: 1, y: 1, z: 1}
+  muzzleChildName: muzzle
+  isAutomatic: 1
+  fireRateRpm: 500
+  damage: 15
+  maxRange: 120
+  pelletsPerShot: 1
+  spreadDegrees: 0.6
+  tracerSpeed: 140
+  recoilShoulderImpulse: 2.5
+  recoilCameraKick: 0.8
+  fireClip: {fileID: 8300000, guid: d3247579c549643a5b3a95f9224eaf3c, type: 3}
+  tracerPrefab: {fileID: 1660800468149884, guid: afc9c0a592c2d3e408e67df46bacd613, type: 3}
+  muzzleFlashPrefab: {fileID: 1000010254994808, guid: 9defeac88977c0d448aa4541073ee9e4, type: 3}
+  muzzleFlashScale: 1
+  hitPrefab: {fileID: 1000010355441670, guid: 02a509a7fa70ed740ba4197e20c5d32d, type: 3}
+  decalPrefab: {fileID: 0}

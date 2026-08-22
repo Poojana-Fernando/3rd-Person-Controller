@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: c1e064e8c809236428c85a418edcc79d
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 282203
+  packageName: 'XtremeFPS: First Person Controller'
+  packageVersion: 1.1.0
+  assetPath: Assets/Spoiled Unknown/XtremeFPS/Weapon/Materials/BuiltIn/MuzzleFlashParticle.mat
+  uploadId: 688664

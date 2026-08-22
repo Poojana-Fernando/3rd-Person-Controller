@@ -1,12 +1,21 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 namespace Motiong.vCharacterController
 {
     public class vThirdPersonController : vThirdPersonAnimator
     {
+        [Header("- Slide Audio")]
+        [SerializeField] private AudioSource slideAudioSource;
+        [SerializeField] private AudioClip slideClip;
+        [SerializeField] private bool loopSlideClip = true;
+
         public virtual void ControlAnimatorRootMotion()
         {
             if (!this.enabled) return;
+
+            // Slide owns position/yaw; never let animator root curves lift or twist the body.
+            if (isSliding)
+                return;
 
             if (inputSmooth == Vector3.zero)
             {
@@ -110,6 +119,12 @@ namespace Motiong.vCharacterController
 
         public virtual void Sprint(bool shiftHeld)
         {
+            if (isSliding)
+            {
+                isSprinting = false;
+                return;
+            }
+
             bool pressingW = input.z > 0.1f;
             bool pressingAorD = Mathf.Abs(input.x) > 0.2f;
             bool pressingS = input.z < -0.1f;
@@ -124,6 +139,9 @@ namespace Motiong.vCharacterController
 
         public virtual void Jump()
         {
+            if (isSliding)
+                return;
+
             // trigger jump behaviour
             jumpCounter = jumpTimer;
             isJumping = true;
@@ -133,6 +151,94 @@ namespace Motiong.vCharacterController
                 animator.CrossFadeInFixedTime("Jump", 0.1f);
             else
                 animator.CrossFadeInFixedTime("JumpMove", .2f);
+        }
+
+        public virtual void Slide()
+        {
+            if (isSliding || !isGrounded || !isSprinting)
+                return;
+
+            lockMovementBeforeSlide = lockMovement;
+            lockRotationBeforeSlide = lockRotation;
+
+            slideMoveDirection = ResolveSlideDirection();
+            if (slideMoveDirection.sqrMagnitude > 0.0001f)
+                transform.rotation = GetSlideFacingRotation(slideMoveDirection, Vector3.up);
+
+            isSliding = true;
+            isSprinting = false;
+            isJumping = false;
+            jumpCounter = 0f;
+            slideCounter = Mathf.Max(0.01f, slideDuration);
+            lockMovement = true;
+            lockRotation = true;
+
+            if (animator != null)
+            {
+                animatorApplyRootMotionBeforeSlide = animator.applyRootMotion;
+                animator.applyRootMotion = false;
+            }
+
+            BeginSlideCapsule();
+
+            // Kill upward velocity before snap — capsule resize must not leave lift.
+            Vector3 startVel = _rigidbody.linearVelocity;
+            startVel.y = 0f;
+            _rigidbody.linearVelocity = startVel;
+
+            SnapSlideToGround(Vector3.up);
+            PlaySlideAudio();
+
+            if (animator != null && animator.enabled)
+                animator.CrossFadeInFixedTime("Sliding", 0.1f);
+        }
+
+        public virtual void StopSlide()
+        {
+            if (!isSliding)
+                return;
+
+            isSliding = false;
+            slideCounter = 0f;
+            slideMoveDirection = Vector3.zero;
+            lockMovement = lockMovementBeforeSlide;
+            lockRotation = lockRotationBeforeSlide;
+
+            if (animator != null)
+                animator.applyRootMotion = animatorApplyRootMotionBeforeSlide;
+
+            EndSlideCapsule();
+            StopSlideAudio();
+        }
+
+        public virtual void UpdateSlide()
+        {
+            if (!isSliding)
+                return;
+
+            if (slideCounter <= 0f || !isGrounded)
+                StopSlide();
+        }
+
+        protected virtual void PlaySlideAudio()
+        {
+            if (slideAudioSource == null || slideClip == null)
+                return;
+
+            slideAudioSource.clip = slideClip;
+            slideAudioSource.loop = loopSlideClip;
+            slideAudioSource.Play();
+        }
+
+        protected virtual void StopSlideAudio()
+        {
+            if (slideAudioSource == null)
+                return;
+
+            if (slideAudioSource.isPlaying)
+                slideAudioSource.Stop();
+
+            slideAudioSource.loop = false;
         }
     }
 }

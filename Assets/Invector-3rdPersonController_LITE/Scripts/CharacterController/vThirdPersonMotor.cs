@@ -54,6 +54,20 @@ namespace Motiong.vCharacterController
         public float groundMaxDistance = 0.5f;
         [Tooltip("Max angle to walk")]
         [Range(30, 80)] public float slopeLimit = 75f;
+
+        [Header("- Slide")]
+        [Tooltip("Forward speed at the start of a slide")]
+        public float slideSpeed = 8f;
+        [Tooltip("How long the slide lasts in seconds")]
+        public float slideDuration = 0.75f;
+        [Tooltip("Forward speed at the end of a slide")]
+        public float slideStopSpeed = 2f;
+        [Tooltip("Capsule height while sliding (keeps the body low to the ground)")]
+        public float slideCapsuleHeight = 0.9f;
+        [Tooltip("Extra downward stick force while sliding")]
+        public float slideGroundStickForce = -25f;
+        [Tooltip("Yaw offset so the slide clip faces the travel direction (this clip is authored ~90° left of root forward).")]
+        public float slideYawOffset = 90f;
         #endregion
 
         #region Components
@@ -82,6 +96,7 @@ namespace Motiong.vCharacterController
         }
         internal bool isGrounded { get; set; }
         internal bool isSprinting { get; set; }
+        internal bool isSliding { get; set; }
         internal bool forceWalkLocomotion { get; set; }
         internal bool suppressUpperBodyLocomotion { get; set; }
         public bool stopMove { get; protected set; }
@@ -105,6 +120,14 @@ namespace Motiong.vCharacterController
         internal Vector3 inputSmooth;                       // generate smooth input based on the inputSmooth value       
         internal Vector3 moveDirection;                     // used to know the direction you're moving 
         protected float freeYawVelocity;
+        protected float slideCounter;
+        protected bool slideCapsuleActive;
+        protected float slideDefaultCapsuleHeight;
+        protected Vector3 slideDefaultCapsuleCenter;
+        protected bool lockMovementBeforeSlide;
+        protected bool lockRotationBeforeSlide;
+        protected Vector3 slideMoveDirection;
+        protected bool animatorApplyRootMotionBeforeSlide;
 
         #endregion
 
@@ -156,6 +179,7 @@ namespace Motiong.vCharacterController
             CheckGround();
             CheckSlopeLimit();
             ControlJumpBehaviour();
+            ControlSlideBehaviour();
             AirControl();
         }
 
@@ -309,7 +333,10 @@ namespace Motiong.vCharacterController
             {
                 isGrounded = true;
                 if (!isJumping && groundDistance > 0.05f)
-                    _rigidbody.AddForce(transform.up * (extraGravity * 2 * Time.deltaTime), ForceMode.VelocityChange);
+                {
+                    float stick = isSliding ? slideGroundStickForce : extraGravity * 2f;
+                    _rigidbody.AddForce(transform.up * (stick * Time.deltaTime), ForceMode.VelocityChange);
+                }
 
                 heightReached = transform.position.y;
             }
@@ -324,18 +351,26 @@ namespace Motiong.vCharacterController
                     // apply extra gravity when falling
                     if (!isJumping)
                     {
-                        _rigidbody.AddForce(transform.up * extraGravity * Time.deltaTime, ForceMode.VelocityChange);
+                        float stick = isSliding ? slideGroundStickForce : extraGravity;
+                        _rigidbody.AddForce(transform.up * (stick * Time.deltaTime), ForceMode.VelocityChange);
                     }
                 }
                 else if (!isJumping)
                 {
-                    _rigidbody.AddForce(transform.up * (extraGravity * 2 * Time.deltaTime), ForceMode.VelocityChange);
+                    float stick = isSliding ? slideGroundStickForce : extraGravity * 2f;
+                    _rigidbody.AddForce(transform.up * (stick * Time.deltaTime), ForceMode.VelocityChange);
                 }
             }
         }
 
         protected virtual void ControlMaterialPhysics()
         {
+            if (isSliding)
+            {
+                _capsuleCollider.material = slippyPhysics;
+                return;
+            }
+
             // change the physics material to very slip when not grounded
             _capsuleCollider.material = (isGrounded && GroundAngle() <= slopeLimit + 1) ? frictionPhysics : slippyPhysics;
 
@@ -345,6 +380,148 @@ namespace Motiong.vCharacterController
                 _capsuleCollider.material = frictionPhysics;
             else
                 _capsuleCollider.material = slippyPhysics;
+        }
+
+        protected virtual void ControlSlideBehaviour()
+        {
+            if (!isSliding)
+                return;
+
+            slideCounter -= Time.deltaTime;
+            isSprinting = false;
+
+            Vector3 groundNormal = groundHit.normal.sqrMagnitude > 0.0001f ? groundHit.normal : Vector3.up;
+            Vector3 desiredDir = slideMoveDirection.sqrMagnitude > 0.0001f ? slideMoveDirection : transform.forward;
+            Vector3 slideDir = Vector3.ProjectOnPlane(desiredDir, groundNormal);
+            if (slideDir.sqrMagnitude < 0.0001f)
+                slideDir = Vector3.ProjectOnPlane(desiredDir, Vector3.up);
+            if (slideDir.sqrMagnitude < 0.0001f)
+                return;
+
+            slideDir.Normalize();
+            slideMoveDirection = slideDir;
+
+            // Slide clip faces ~left of root forward — offset yaw so the body tracks travel.
+            Quaternion targetRotation = GetSlideFacingRotation(slideDir, groundNormal);
+            transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, 720f * Time.deltaTime);
+
+            float duration = Mathf.Max(0.01f, slideDuration);
+            float t = Mathf.Clamp01(1f - (slideCounter / duration));
+            float speed = Mathf.Lerp(slideSpeed, slideStopSpeed, t);
+
+            Vector3 velocity = slideDir * speed;
+            velocity.y = 0f;
+            _rigidbody.linearVelocity = velocity;
+
+            SnapSlideToGround(groundNormal);
+        }
+
+        protected virtual void SnapSlideToGround(Vector3 groundNormal)
+        {
+            if (_capsuleCollider == null)
+                return;
+
+            // Prefer the motor's ground probe when it already found the floor.
+            RaycastHit hit = groundHit;
+            bool hasHit = hit.collider != null && !IsOwnCollider(hit.collider);
+
+            if (!hasHit)
+            {
+                float probeHeight = Mathf.Max(colliderHeight, _capsuleCollider.height) + 0.5f;
+                Vector3 origin = transform.position + Vector3.up * probeHeight;
+                float maxDistance = probeHeight + groundMaxDistance + 1f;
+                RaycastHit[] hits = Physics.RaycastAll(
+                    origin,
+                    Vector3.down,
+                    maxDistance,
+                    groundLayer,
+                    QueryTriggerInteraction.Ignore);
+
+                float bestDistance = float.MaxValue;
+                for (int i = 0; i < hits.Length; i++)
+                {
+                    if (IsOwnCollider(hits[i].collider))
+                        continue;
+
+                    if (hits[i].distance < bestDistance)
+                    {
+                        bestDistance = hits[i].distance;
+                        hit = hits[i];
+                        hasHit = true;
+                    }
+                }
+            }
+
+            if (!hasHit)
+                return;
+
+            // Keep the transform pivot on the floor (capsule bottom stays at y ≈ 0).
+            Vector3 pos = transform.position;
+            pos.y = hit.point.y;
+            transform.position = pos;
+
+            Vector3 vel = _rigidbody.linearVelocity;
+            vel.y = 0f;
+            _rigidbody.linearVelocity = vel;
+
+            _rigidbody.AddForce(-groundNormal.normalized * Mathf.Abs(slideGroundStickForce) * Time.deltaTime, ForceMode.VelocityChange);
+        }
+
+        protected bool IsOwnCollider(Collider other)
+        {
+            return other != null && other.transform.IsChildOf(transform);
+        }
+
+        protected virtual Vector3 ResolveSlideDirection()
+        {
+            Vector3 dir = moveDirection;
+            if (dir.sqrMagnitude < 0.01f && rotateTarget != null)
+                dir = rotateTarget.forward;
+            if (dir.sqrMagnitude < 0.01f)
+                dir = transform.forward;
+
+            dir = Vector3.ProjectOnPlane(dir, Vector3.up);
+            return dir.sqrMagnitude > 0.0001f ? dir.normalized : transform.forward;
+        }
+
+        protected virtual Quaternion GetSlideFacingRotation(Vector3 slideDir, Vector3 groundNormal)
+        {
+            if (slideDir.sqrMagnitude < 0.0001f)
+                slideDir = transform.forward;
+
+            Vector3 up = groundNormal.sqrMagnitude > 0.0001f ? groundNormal : Vector3.up;
+            Quaternion faceTravel = Quaternion.LookRotation(slideDir.normalized, up);
+            return faceTravel * Quaternion.Euler(0f, slideYawOffset, 0f);
+        }
+
+        protected virtual void BeginSlideCapsule()
+        {
+            if (_capsuleCollider == null || slideCapsuleActive)
+                return;
+
+            slideDefaultCapsuleHeight = _capsuleCollider.height;
+            slideDefaultCapsuleCenter = _capsuleCollider.center;
+
+            float minHeight = _capsuleCollider.radius * 2f;
+            float newHeight = Mathf.Clamp(slideCapsuleHeight, minHeight, slideDefaultCapsuleHeight);
+            // Keep the capsule bottom at the same world height to avoid PhysX pop-up.
+            float bottom = slideDefaultCapsuleCenter.y - slideDefaultCapsuleHeight * 0.5f;
+            float newCenterY = bottom + newHeight * 0.5f;
+
+            // Set center first while tall, then shrink — reduces underground overlap.
+            _capsuleCollider.center = new Vector3(slideDefaultCapsuleCenter.x, newCenterY, slideDefaultCapsuleCenter.z);
+            _capsuleCollider.height = newHeight;
+            slideCapsuleActive = true;
+        }
+
+        protected virtual void EndSlideCapsule()
+        {
+            if (_capsuleCollider == null || !slideCapsuleActive)
+                return;
+
+            _capsuleCollider.height = slideDefaultCapsuleHeight;
+            _capsuleCollider.center = slideDefaultCapsuleCenter;
+            slideCapsuleActive = false;
         }
 
         protected virtual void CheckGroundDistance()

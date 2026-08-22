@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 9defeac88977c0d448aa4541073ee9e4
+timeCreated: 1473770367
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 282203
+  packageName: 'XtremeFPS: First Person Controller'
+  packageVersion: 1.1.0
+  assetPath: Assets/Spoiled Unknown/XtremeFPS/Weapon/Effects/Prefabs/MuzzleFlashEffect.prefab
+  uploadId: 688664

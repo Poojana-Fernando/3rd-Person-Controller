@@ -21,6 +21,7 @@ namespace Motiong.vCharacterController
             // Free vs strafe is rotation-only: free keeps current facing, strafe locks to camera.
             animator.SetBool(vAnimatorParameters.IsStrafing, true);
             animator.SetBool(vAnimatorParameters.IsSprinting, isSprinting);
+            animator.SetBool(vAnimatorParameters.IsSliding, isSliding);
             animator.SetBool(vAnimatorParameters.IsGrounded, isGrounded);
             animator.SetFloat(vAnimatorParameters.GroundDistance, groundDistance);
 
@@ -87,6 +88,7 @@ namespace Motiong.vCharacterController
         public static int IsGrounded = Animator.StringToHash("IsGrounded");
         public static int IsStrafing = Animator.StringToHash("IsStrafing");
         public static int IsSprinting = Animator.StringToHash("IsSprinting");
+        public static int IsSliding = Animator.StringToHash("IsSliding");
         public static int GroundDistance = Animator.StringToHash("GroundDistance");
     }
 }

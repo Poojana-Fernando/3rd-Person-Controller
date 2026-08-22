@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 403a72fcae6d19b4a876d5a82fba4db2
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 7400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 282203
+  packageName: 'XtremeFPS: First Person Controller'
+  packageVersion: 1.1.0
+  assetPath: Assets/Spoiled Unknown/XtremeFPS/Weapon/Animations/Reload.anim
+  uploadId: 688664

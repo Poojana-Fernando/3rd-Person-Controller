@@ -12,6 +12,7 @@ namespace Motiong.vCharacterController
         public KeyCode jumpInput = KeyCode.Space;
         public KeyCode strafeInput = KeyCode.Tab;
         public KeyCode sprintInput = KeyCode.LeftShift;
+        public KeyCode slideInput = KeyCode.C;
 
         [Header("Camera Input")]
         public string rotateCameraXInput = "Mouse X";
@@ -35,6 +36,7 @@ namespace Motiong.vCharacterController
         protected virtual void FixedUpdate()
         {
             cc.UpdateMotor();               // updates the ThirdPersonMotor methods
+            cc.UpdateSlide();               // ends slide when timer/grounding expire
             cc.ControlLocomotionType();     // handle the controller locomotion type and movespeed
             cc.ControlRotationType();       // handle the controller rotation type
         }
@@ -80,6 +82,7 @@ namespace Motiong.vCharacterController
             MoveInput();
             CameraInput();
             SprintInput();
+            SlideInput();
             StrafeInput();
             JumpInput();
         }
@@ -155,13 +158,25 @@ namespace Motiong.vCharacterController
             cc.Sprint(Input.GetKey(sprintInput));
         }
 
+        protected virtual void SlideInput()
+        {
+            if (gunController != null && gunController.SuppressSprint)
+                return;
+
+            if (!Input.GetKey(sprintInput) || !Input.GetKeyDown(slideInput))
+                return;
+
+            if (cc.isSprinting && cc.isGrounded && !cc.isSliding)
+                cc.Slide();
+        }
+
         /// <summary>
         /// Conditions to trigger the Jump animation & behavior
         /// </summary>
         /// <returns></returns>
         protected virtual bool JumpConditions()
         {
-            return cc.isGrounded && cc.GroundAngle() < cc.slopeLimit && !cc.isJumping && !cc.stopMove;
+            return cc.isGrounded && cc.GroundAngle() < cc.slopeLimit && !cc.isJumping && !cc.stopMove && !cc.isSliding;
         }
 
         /// <summary>
