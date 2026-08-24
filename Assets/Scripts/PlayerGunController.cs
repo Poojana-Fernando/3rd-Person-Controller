@@ -142,14 +142,17 @@ public class PlayerGunController : MonoBehaviour
 
     private void AutoAssignReferences()
     {
-        const string WristPath =
-            "guard/Armature/root ground/root hip/spine lower/spine middle/spine upper/arm right shoulder 1/arm right shoulder 2/arm right elbow/arm right wrist";
-
         if (weaponHand == null)
         {
-            weaponHand = transform.Find(WristPath);
+            weaponHand = FindBoneByName("CC_Base_R_Hand");
             if (weaponHand == null)
-                Debug.LogError($"PlayerGunController: right wrist bone not found at '{WristPath}'.", this);
+            {
+                weaponHand = transform.Find(
+                    "guard/Armature/root ground/root hip/spine lower/spine middle/spine upper/arm right shoulder 1/arm right shoulder 2/arm right elbow/arm right wrist");
+            }
+
+            if (weaponHand == null)
+                Debug.LogError("PlayerGunController: right hand/wrist bone not found.", this);
         }
 
         if (crosshair == null)
@@ -182,7 +185,11 @@ public class PlayerGunController : MonoBehaviour
                 aimCamera.followTarget = transform;
 
             if (aimCamera.spineAnchor == null)
-                aimCamera.spineAnchor = transform.Find("guard/Armature/root ground/root hip/spine lower/spine middle");
+            {
+                aimCamera.spineAnchor = FindBoneByName("CC_Base_Spine01");
+                if (aimCamera.spineAnchor == null)
+                    aimCamera.spineAnchor = transform.Find("guard/Armature/root ground/root hip/spine lower/spine middle");
+            }
 
             if (aimCamera.upperBodyAim == null && upperBodyAim != null)
                 aimCamera.upperBodyAim = upperBodyAim;
@@ -202,14 +209,27 @@ public class PlayerGunController : MonoBehaviour
 
         if (headAimOrigin == null)
         {
-            headAimOrigin = transform.Find(
-                "guard/Armature/root ground/root hip/spine lower/spine middle/spine upper/neck lower");
+            headAimOrigin = FindBoneByName("CC_Base_NeckTwist01");
+            if (headAimOrigin == null)
+                headAimOrigin = FindBoneByName("CC_Base_Head");
             if (headAimOrigin == null)
             {
                 headAimOrigin = transform.Find(
-                    "guard/Armature/root ground/root hip/spine lower/spine middle/spine upper/neck lower/head");
+                    "guard/Armature/root ground/root hip/spine lower/spine middle/spine upper/neck lower");
             }
         }
+    }
+
+    private Transform FindBoneByName(string exactName)
+    {
+        Transform[] all = GetComponentsInChildren<Transform>(true);
+        for (int i = 0; i < all.Length; i++)
+        {
+            if (all[i].name == exactName)
+                return all[i];
+        }
+
+        return null;
     }
 
     private void CacheGunLayerIndex()

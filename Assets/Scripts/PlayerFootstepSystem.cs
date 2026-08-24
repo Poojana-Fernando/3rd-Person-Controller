@@ -1,5 +1,6 @@
 using Motiong.vCharacterController;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 [DisallowMultipleComponent]
 public class PlayerFootstepSystem : MonoBehaviour
@@ -11,10 +12,15 @@ public class PlayerFootstepSystem : MonoBehaviour
     [Header("Timing")]
     [Tooltip("Minimum horizontal speed before footsteps play.")]
     [SerializeField] private float footstepSensitivity = 0.35f;
-    [Tooltip("Seconds between steps while walking/running.")]
-    [SerializeField] private float walkStepInterval = 0.42f;
+    [Tooltip("Seconds between steps while walking (aim/strafe, walk-by-default, or low input).")]
+    [SerializeField] private float walkStepInterval = 0.5f;
+    [Tooltip("Seconds between steps while running (normal free locomotion).")]
+    [FormerlySerializedAs("walkStepInterval")]
+    [SerializeField] private float runStepInterval = 0.38f;
     [Tooltip("Seconds between steps while sprinting.")]
     [SerializeField] private float sprintStepInterval = 0.28f;
+    [Tooltip("Animator input magnitude at or below this uses the walk interval (when not sprinting).")]
+    [SerializeField] private float walkInputMagnitudeMax = 0.55f;
 
     [Header("Surface Tags")]
     [SerializeField] private string grassTag = "Grass";
@@ -106,9 +112,7 @@ public class PlayerFootstepSystem : MonoBehaviour
             return;
         }
 
-        float interval = _controller.isSprinting
-            ? Mathf.Max(0.05f, sprintStepInterval)
-            : Mathf.Max(0.05f, walkStepInterval);
+        float interval = Mathf.Max(0.05f, GetStepInterval());
 
         _stepTimer += Time.deltaTime;
         if (_stepTimer < interval)
@@ -116,6 +120,30 @@ public class PlayerFootstepSystem : MonoBehaviour
 
         _stepTimer = 0f;
         PlaySurfaceStep();
+    }
+
+    private float GetStepInterval()
+    {
+        if (_controller.isSprinting)
+            return sprintStepInterval;
+
+        if (IsWalkingLocomotion())
+            return walkStepInterval;
+
+        return runStepInterval;
+    }
+
+    private bool IsWalkingLocomotion()
+    {
+        if (_controller.forceWalkLocomotion || _controller.suppressUpperBodyLocomotion)
+            return true;
+
+        vThirdPersonMotor.vMovementSpeed speed =
+            _controller.isStrafing ? _controller.strafeSpeed : _controller.freeSpeed;
+        if (speed != null && speed.walkByDefault)
+            return true;
+
+        return Mathf.Abs(_controller.inputMagnitude) <= walkInputMagnitudeMax;
     }
 
     private float GetHorizontalSpeed()

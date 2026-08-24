@@ -189,12 +189,33 @@ public class UpperBodyAim : MonoBehaviour
     {
         if (spineMiddle == null)
         {
-            spineMiddle = transform.Find("guard/Armature/root ground/root hip/spine lower/spine middle");
+            spineMiddle = FindBone(
+                "CC_Base_Spine01",
+                "guard/Armature/root ground/root hip/spine lower/spine middle");
         }
 
-        if (spineUpper == null && spineMiddle != null)
+        if (spineUpper == null)
         {
-            spineUpper = spineMiddle.Find("spine upper");
+            spineUpper = FindBone(
+                "CC_Base_Spine02",
+                null);
+            if (spineUpper == null && spineMiddle != null)
+                spineUpper = spineMiddle.Find("spine upper");
         }
+    }
+
+    private Transform FindBone(string preferredName, string legacyPath)
+    {
+        Transform[] all = GetComponentsInChildren<Transform>(true);
+        for (int i = 0; i < all.Length; i++)
+        {
+            if (all[i].name == preferredName)
+                return all[i];
+        }
+
+        if (!string.IsNullOrEmpty(legacyPath))
+            return transform.Find(legacyPath);
+
+        return null;
     }
 }

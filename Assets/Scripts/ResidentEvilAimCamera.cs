@@ -316,7 +316,9 @@ public class ResidentEvilAimCamera : MonoBehaviour
 
         if (spineAnchor == null && followTarget != null)
         {
-            spineAnchor = followTarget.Find("guard/Armature/root ground/root hip/spine lower/spine middle");
+            spineAnchor = FindBoneByName(followTarget, "CC_Base_Spine01");
+            if (spineAnchor == null)
+                spineAnchor = followTarget.Find("guard/Armature/root ground/root hip/spine lower/spine middle");
         }
 
         if (upperBodyAim == null && followTarget != null)
@@ -327,5 +329,17 @@ public class ResidentEvilAimCamera : MonoBehaviour
             _bodyYaw = followTarget.eulerAngles.y;
             SnapSmoothedValues();
         }
+    }
+
+    private static Transform FindBoneByName(Transform root, string exactName)
+    {
+        Transform[] all = root.GetComponentsInChildren<Transform>(true);
+        for (int i = 0; i < all.Length; i++)
+        {
+            if (all[i].name == exactName)
+                return all[i];
+        }
+
+        return null;
     }
 }

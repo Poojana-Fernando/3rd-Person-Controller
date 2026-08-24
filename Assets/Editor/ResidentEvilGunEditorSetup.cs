@@ -47,18 +47,42 @@ public static class ResidentEvilGunEditorSetup
             return;
         }
 
-        Transform rightWrist = player.transform.Find("guard/Armature/root ground/root hip/spine lower/spine middle/spine upper/arm right shoulder 1/arm right shoulder 2/arm right elbow/arm right wrist");
+        Transform rightWrist = FindHandBone(player.transform);
         if (rightWrist == null)
         {
-            Debug.LogError("arm right wrist bone not found.");
+            Debug.LogError("Right hand/wrist bone not found (CC_Base_R_Hand or arm right wrist).");
             return;
         }
 
         ReparentGun(player, rightWrist, "HoldGun");
         ReparentGun(player, rightWrist, "AimGun");
 
+        // Also reparent HoldGun*/AimGun* variants under the hand.
+        Transform[] all = player.GetComponentsInChildren<Transform>(true);
+        for (int i = 0; i < all.Length; i++)
+        {
+            Transform t = all[i];
+            if (t == null || t.parent == rightWrist)
+                continue;
+            if (t.name.StartsWith("HoldGun") || t.name.StartsWith("AimGun"))
+                Undo.SetTransformParent(t, rightWrist, "Attach gun to hand");
+        }
+
         EditorSceneManager.MarkSceneDirty(SceneManager.GetActiveScene());
-        Debug.Log("Guns attached to arm right wrist.");
+        Debug.Log($"Guns attached to '{rightWrist.name}'.");
+    }
+
+    private static Transform FindHandBone(Transform playerRoot)
+    {
+        Transform[] all = playerRoot.GetComponentsInChildren<Transform>(true);
+        for (int i = 0; i < all.Length; i++)
+        {
+            if (all[i].name == "CC_Base_R_Hand")
+                return all[i];
+        }
+
+        return playerRoot.Find(
+            "guard/Armature/root ground/root hip/spine lower/spine middle/spine upper/arm right shoulder 1/arm right shoulder 2/arm right elbow/arm right wrist");
     }
 
     private static void ReparentGun(GameObject player, Transform hand, string gunName)
@@ -557,7 +581,8 @@ public static class ResidentEvilGunEditorSetup
         so.FindProperty("metalTag").stringValue = "Metal";
         so.FindProperty("gravelTag").stringValue = "Gravel";
         so.FindProperty("woodTag").stringValue = "Wood";
-        so.FindProperty("walkStepInterval").floatValue = 0.42f;
+        so.FindProperty("walkStepInterval").floatValue = 0.5f;
+        so.FindProperty("runStepInterval").floatValue = 0.38f;
         so.FindProperty("sprintStepInterval").floatValue = 0.28f;
         so.FindProperty("footstepSensitivity").floatValue = 0.35f;
 
