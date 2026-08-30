@@ -43,6 +43,7 @@ public class PlayerFootstepSystem : MonoBehaviour
     [SerializeField] private AudioClip landClip;
 
     private vThirdPersonController _controller;
+    private ParkourController _parkour;
     private Rigidbody _rigidbody;
     private float _stepTimer;
     private bool _wasGrounded = true;
@@ -51,6 +52,7 @@ public class PlayerFootstepSystem : MonoBehaviour
     private void Awake()
     {
         _controller = GetComponent<vThirdPersonController>();
+        _parkour = GetComponent<ParkourController>();
         _rigidbody = GetComponent<Rigidbody>();
         EnsureAudioSource();
     }
@@ -59,6 +61,12 @@ public class PlayerFootstepSystem : MonoBehaviour
     {
         if (_controller == null)
             return;
+
+        if (_parkour != null && _parkour.IsInParkourAction)
+        {
+            _stepTimer = 0f;
+            return;
+        }
 
         UpdateJumpLand();
         UpdateFootsteps();

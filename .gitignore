@@ -139,3 +139,21 @@ InitTestScene*.unity*
 /Assets/Spoiled Unknown/XtremeFPS/Documentation.pdf
 /Assets/Spoiled Unknown/XtremeFPS/Documentation.pdf.meta
 
+# Consolidated 3D assets folder — large local packs (keep on disk; do not push)
+/Assets/3D assets/ak-47s/
+/Assets/3D assets/ak-47s.meta
+/Assets/3D assets/character-with-animation/
+/Assets/3D assets/character-with-animation.meta
+/Assets/3D assets/free-character-bot-blast-r-325-by-oscar-creativo/
+/Assets/3D assets/free-character-bot-blast-r-325-by-oscar-creativo.meta
+/Assets/3D assets/gun1/textures/
+/Assets/3D assets/gun1/source/
+/Assets/3D assets/optimus-jetpack/
+/Assets/3D assets/optimus-jetpack.meta
+/Assets/3D assets/Spoiled Unknown/XtremeFPS/Weapon/Textures/
+/Assets/3D assets/Spoiled Unknown/XtremeFPS/Weapon/Models/
+/Assets/3D assets/Spoiled Unknown/XtremeFPS/Weapon/Materials/HDRP/
+/Assets/3D assets/Spoiled Unknown/XtremeFPS/Weapon/User Interfaces/
+/Assets/3D assets/Spoiled Unknown/XtremeFPS/Documentation.pdf
+/Assets/3D assets/Spoiled Unknown/XtremeFPS/Documentation.pdf.meta
+

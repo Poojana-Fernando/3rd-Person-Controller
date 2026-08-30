@@ -1,0 +1,461 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!319 &31900000
+AvatarMask:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: CrouchLowerBodyMask
+  m_Mask: 01000000000000000000000001000000010000000000000000000000000000000000000001000000010000000000000000000000
+  m_Elements:
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Pelvis
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Pelvis/CC_Base_L_Thigh
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Pelvis/CC_Base_L_Thigh/CC_Base_L_Calf
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Pelvis/CC_Base_L_Thigh/CC_Base_L_Calf/CC_Base_L_CalfTwist01
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Pelvis/CC_Base_L_Thigh/CC_Base_L_Calf/CC_Base_L_CalfTwist01/CC_Base_L_CalfTwist02
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Pelvis/CC_Base_L_Thigh/CC_Base_L_Calf/CC_Base_L_Foot
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Pelvis/CC_Base_L_Thigh/CC_Base_L_Calf/CC_Base_L_Foot/CC_Base_L_ToeBase
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Pelvis/CC_Base_L_Thigh/CC_Base_L_Calf/CC_Base_L_Foot/CC_Base_L_ToeBase/CC_Base_L_BigToe1
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Pelvis/CC_Base_L_Thigh/CC_Base_L_Calf/CC_Base_L_Foot/CC_Base_L_ToeBase/CC_Base_L_IndexToe1
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Pelvis/CC_Base_L_Thigh/CC_Base_L_Calf/CC_Base_L_Foot/CC_Base_L_ToeBase/CC_Base_L_MidToe1
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Pelvis/CC_Base_L_Thigh/CC_Base_L_Calf/CC_Base_L_Foot/CC_Base_L_ToeBase/CC_Base_L_PinkyToe1
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Pelvis/CC_Base_L_Thigh/CC_Base_L_Calf/CC_Base_L_Foot/CC_Base_L_ToeBase/CC_Base_L_RingToe1
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Pelvis/CC_Base_L_Thigh/CC_Base_L_Calf/CC_Base_L_Foot/CC_Base_L_ToeBaseShareBone
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Pelvis/CC_Base_L_Thigh/CC_Base_L_Calf/CC_Base_L_KneeShareBone
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Pelvis/CC_Base_L_Thigh/CC_Base_L_ThighTwist01
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Pelvis/CC_Base_L_Thigh/CC_Base_L_ThighTwist01/CC_Base_L_ThighTwist02
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Pelvis/CC_Base_R_Thigh
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Pelvis/CC_Base_R_Thigh/CC_Base_R_Calf
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Pelvis/CC_Base_R_Thigh/CC_Base_R_Calf/CC_Base_R_CalfTwist01
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Pelvis/CC_Base_R_Thigh/CC_Base_R_Calf/CC_Base_R_CalfTwist01/CC_Base_R_CalfTwist02
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Pelvis/CC_Base_R_Thigh/CC_Base_R_Calf/CC_Base_R_Foot
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Pelvis/CC_Base_R_Thigh/CC_Base_R_Calf/CC_Base_R_Foot/CC_Base_R_ToeBase
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Pelvis/CC_Base_R_Thigh/CC_Base_R_Calf/CC_Base_R_Foot/CC_Base_R_ToeBase/CC_Base_R_BigToe1
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Pelvis/CC_Base_R_Thigh/CC_Base_R_Calf/CC_Base_R_Foot/CC_Base_R_ToeBase/CC_Base_R_IndexToe1
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Pelvis/CC_Base_R_Thigh/CC_Base_R_Calf/CC_Base_R_Foot/CC_Base_R_ToeBase/CC_Base_R_MidToe1
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Pelvis/CC_Base_R_Thigh/CC_Base_R_Calf/CC_Base_R_Foot/CC_Base_R_ToeBase/CC_Base_R_PinkyToe1
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Pelvis/CC_Base_R_Thigh/CC_Base_R_Calf/CC_Base_R_Foot/CC_Base_R_ToeBase/CC_Base_R_RingToe1
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Pelvis/CC_Base_R_Thigh/CC_Base_R_Calf/CC_Base_R_Foot/CC_Base_R_ToeBaseShareBone
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Pelvis/CC_Base_R_Thigh/CC_Base_R_Calf/CC_Base_R_KneeShareBone
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Pelvis/CC_Base_R_Thigh/CC_Base_R_ThighTwist01
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Pelvis/CC_Base_R_Thigh/CC_Base_R_ThighTwist01/CC_Base_R_ThighTwist02
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_L_Clavicle
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_L_Clavicle/CC_Base_L_Upperarm
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_L_Clavicle/CC_Base_L_Upperarm/CC_Base_L_Forearm
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_L_Clavicle/CC_Base_L_Upperarm/CC_Base_L_Forearm/CC_Base_L_ElbowShareBone
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_L_Clavicle/CC_Base_L_Upperarm/CC_Base_L_Forearm/CC_Base_L_ForearmTwist01
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_L_Clavicle/CC_Base_L_Upperarm/CC_Base_L_Forearm/CC_Base_L_ForearmTwist01/CC_Base_L_ForearmTwist02
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_L_Clavicle/CC_Base_L_Upperarm/CC_Base_L_Forearm/CC_Base_L_Hand
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_L_Clavicle/CC_Base_L_Upperarm/CC_Base_L_Forearm/CC_Base_L_Hand/CC_Base_L_Index1
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_L_Clavicle/CC_Base_L_Upperarm/CC_Base_L_Forearm/CC_Base_L_Hand/CC_Base_L_Index1/CC_Base_L_Index2
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_L_Clavicle/CC_Base_L_Upperarm/CC_Base_L_Forearm/CC_Base_L_Hand/CC_Base_L_Index1/CC_Base_L_Index2/CC_Base_L_Index3
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_L_Clavicle/CC_Base_L_Upperarm/CC_Base_L_Forearm/CC_Base_L_Hand/CC_Base_L_Mid1
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_L_Clavicle/CC_Base_L_Upperarm/CC_Base_L_Forearm/CC_Base_L_Hand/CC_Base_L_Mid1/CC_Base_L_Mid2
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_L_Clavicle/CC_Base_L_Upperarm/CC_Base_L_Forearm/CC_Base_L_Hand/CC_Base_L_Mid1/CC_Base_L_Mid2/CC_Base_L_Mid3
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_L_Clavicle/CC_Base_L_Upperarm/CC_Base_L_Forearm/CC_Base_L_Hand/CC_Base_L_Pinky1
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_L_Clavicle/CC_Base_L_Upperarm/CC_Base_L_Forearm/CC_Base_L_Hand/CC_Base_L_Pinky1/CC_Base_L_Pinky2
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_L_Clavicle/CC_Base_L_Upperarm/CC_Base_L_Forearm/CC_Base_L_Hand/CC_Base_L_Pinky1/CC_Base_L_Pinky2/CC_Base_L_Pinky3
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_L_Clavicle/CC_Base_L_Upperarm/CC_Base_L_Forearm/CC_Base_L_Hand/CC_Base_L_Ring1
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_L_Clavicle/CC_Base_L_Upperarm/CC_Base_L_Forearm/CC_Base_L_Hand/CC_Base_L_Ring1/CC_Base_L_Ring2
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_L_Clavicle/CC_Base_L_Upperarm/CC_Base_L_Forearm/CC_Base_L_Hand/CC_Base_L_Ring1/CC_Base_L_Ring2/CC_Base_L_Ring3
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_L_Clavicle/CC_Base_L_Upperarm/CC_Base_L_Forearm/CC_Base_L_Hand/CC_Base_L_Thumb1
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_L_Clavicle/CC_Base_L_Upperarm/CC_Base_L_Forearm/CC_Base_L_Hand/CC_Base_L_Thumb1/CC_Base_L_Thumb2
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_L_Clavicle/CC_Base_L_Upperarm/CC_Base_L_Forearm/CC_Base_L_Hand/CC_Base_L_Thumb1/CC_Base_L_Thumb2/CC_Base_L_Thumb3
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_L_Clavicle/CC_Base_L_Upperarm/CC_Base_L_UpperarmTwist01
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_L_Clavicle/CC_Base_L_Upperarm/CC_Base_L_UpperarmTwist01/CC_Base_L_UpperarmTwist02
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_L_RibsTwist
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_L_RibsTwist/CC_Base_L_Breast
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_NeckTwist01
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_NeckTwist01/CC_Base_NeckTwist02
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_NeckTwist01/CC_Base_NeckTwist02/CC_Base_Head
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_NeckTwist01/CC_Base_NeckTwist02/CC_Base_Head/CC_Base_FacialBone
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_NeckTwist01/CC_Base_NeckTwist02/CC_Base_Head/CC_Base_FacialBone/CC_Base_JawRoot
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_NeckTwist01/CC_Base_NeckTwist02/CC_Base_Head/CC_Base_FacialBone/CC_Base_JawRoot/CC_Base_Teeth02
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_NeckTwist01/CC_Base_NeckTwist02/CC_Base_Head/CC_Base_FacialBone/CC_Base_JawRoot/CC_Base_Tongue01
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_NeckTwist01/CC_Base_NeckTwist02/CC_Base_Head/CC_Base_FacialBone/CC_Base_JawRoot/CC_Base_Tongue01/CC_Base_Tongue02
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_NeckTwist01/CC_Base_NeckTwist02/CC_Base_Head/CC_Base_FacialBone/CC_Base_JawRoot/CC_Base_Tongue01/CC_Base_Tongue02/CC_Base_Tongue03
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_NeckTwist01/CC_Base_NeckTwist02/CC_Base_Head/CC_Base_FacialBone/CC_Base_L_Eye
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_NeckTwist01/CC_Base_NeckTwist02/CC_Base_Head/CC_Base_FacialBone/CC_Base_R_Eye
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_NeckTwist01/CC_Base_NeckTwist02/CC_Base_Head/CC_Base_FacialBone/CC_Base_UpperJaw
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_NeckTwist01/CC_Base_NeckTwist02/CC_Base_Head/CC_Base_FacialBone/CC_Base_UpperJaw/CC_Base_Teeth01
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_R_Clavicle
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_R_Clavicle/CC_Base_R_Upperarm
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_R_Clavicle/CC_Base_R_Upperarm/CC_Base_R_Forearm
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_R_Clavicle/CC_Base_R_Upperarm/CC_Base_R_Forearm/CC_Base_R_ElbowShareBone
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_R_Clavicle/CC_Base_R_Upperarm/CC_Base_R_Forearm/CC_Base_R_ForearmTwist01
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_R_Clavicle/CC_Base_R_Upperarm/CC_Base_R_Forearm/CC_Base_R_ForearmTwist01/CC_Base_R_ForearmTwist02
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_R_Clavicle/CC_Base_R_Upperarm/CC_Base_R_Forearm/CC_Base_R_Hand
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_R_Clavicle/CC_Base_R_Upperarm/CC_Base_R_Forearm/CC_Base_R_Hand/CC_Base_R_Index1
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_R_Clavicle/CC_Base_R_Upperarm/CC_Base_R_Forearm/CC_Base_R_Hand/CC_Base_R_Index1/CC_Base_R_Index2
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_R_Clavicle/CC_Base_R_Upperarm/CC_Base_R_Forearm/CC_Base_R_Hand/CC_Base_R_Index1/CC_Base_R_Index2/CC_Base_R_Index3
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_R_Clavicle/CC_Base_R_Upperarm/CC_Base_R_Forearm/CC_Base_R_Hand/CC_Base_R_Mid1
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_R_Clavicle/CC_Base_R_Upperarm/CC_Base_R_Forearm/CC_Base_R_Hand/CC_Base_R_Mid1/CC_Base_R_Mid2
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_R_Clavicle/CC_Base_R_Upperarm/CC_Base_R_Forearm/CC_Base_R_Hand/CC_Base_R_Mid1/CC_Base_R_Mid2/CC_Base_R_Mid3
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_R_Clavicle/CC_Base_R_Upperarm/CC_Base_R_Forearm/CC_Base_R_Hand/CC_Base_R_Pinky1
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_R_Clavicle/CC_Base_R_Upperarm/CC_Base_R_Forearm/CC_Base_R_Hand/CC_Base_R_Pinky1/CC_Base_R_Pinky2
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_R_Clavicle/CC_Base_R_Upperarm/CC_Base_R_Forearm/CC_Base_R_Hand/CC_Base_R_Pinky1/CC_Base_R_Pinky2/CC_Base_R_Pinky3
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_R_Clavicle/CC_Base_R_Upperarm/CC_Base_R_Forearm/CC_Base_R_Hand/CC_Base_R_Ring1
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_R_Clavicle/CC_Base_R_Upperarm/CC_Base_R_Forearm/CC_Base_R_Hand/CC_Base_R_Ring1/CC_Base_R_Ring2
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_R_Clavicle/CC_Base_R_Upperarm/CC_Base_R_Forearm/CC_Base_R_Hand/CC_Base_R_Ring1/CC_Base_R_Ring2/CC_Base_R_Ring3
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_R_Clavicle/CC_Base_R_Upperarm/CC_Base_R_Forearm/CC_Base_R_Hand/CC_Base_R_Thumb1
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_R_Clavicle/CC_Base_R_Upperarm/CC_Base_R_Forearm/CC_Base_R_Hand/CC_Base_R_Thumb1/CC_Base_R_Thumb2
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_R_Clavicle/CC_Base_R_Upperarm/CC_Base_R_Forearm/CC_Base_R_Hand/CC_Base_R_Thumb1/CC_Base_R_Thumb2/CC_Base_R_Thumb3
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_R_Clavicle/CC_Base_R_Upperarm/CC_Base_R_Forearm/CC_Base_R_Hand/HoldGunShotgun
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_R_Clavicle/CC_Base_R_Upperarm/CC_Base_R_Forearm/CC_Base_R_Hand/HoldGunShotgun/LowPolyForBake_4800
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_R_Clavicle/CC_Base_R_Upperarm/CC_Base_R_Forearm/CC_Base_R_Hand/HoldGunShotgun/LowPolyForBake_4800/polySurface185
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_R_Clavicle/CC_Base_R_Upperarm/CC_Base_R_Forearm/CC_Base_R_Hand/HoldGunGlock
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_R_Clavicle/CC_Base_R_Upperarm/CC_Base_R_Forearm/CC_Base_R_Hand/HoldGunGlock/Glock
+      (1)
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_R_Clavicle/CC_Base_R_Upperarm/CC_Base_R_Forearm/CC_Base_R_Hand/HoldGunGlock/Glock
+      (1)/Ejector_low
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_R_Clavicle/CC_Base_R_Upperarm/CC_Base_R_Forearm/CC_Base_R_Hand/HoldGunGlock/Glock
+      (1)/Frame_low
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_R_Clavicle/CC_Base_R_Upperarm/CC_Base_R_Forearm/CC_Base_R_Hand/HoldGunGlock/Glock
+      (1)/Hammer_low
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_R_Clavicle/CC_Base_R_Upperarm/CC_Base_R_Forearm/CC_Base_R_Hand/HoldGunGlock/Glock
+      (1)/Slide Stop_low
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_R_Clavicle/CC_Base_R_Upperarm/CC_Base_R_Forearm/CC_Base_R_Hand/HoldGunGlock/Glock
+      (1)/Slide_low
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_R_Clavicle/CC_Base_R_Upperarm/CC_Base_R_Forearm/CC_Base_R_Hand/HoldGunGlock/Glock
+      (1)/Trigger_low
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_R_Clavicle/CC_Base_R_Upperarm/CC_Base_R_Forearm/CC_Base_R_Hand/HoldGunAK
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_R_Clavicle/CC_Base_R_Upperarm/CC_Base_R_Forearm/CC_Base_R_Hand/HoldGunAK/Cube.007
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_R_Clavicle/CC_Base_R_Upperarm/CC_Base_R_Forearm/CC_Base_R_Hand/HoldGunAK/Cylinder.002
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_R_Clavicle/CC_Base_R_Upperarm/CC_Base_R_Forearm/CC_Base_R_Hand/HoldGunAR
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_R_Clavicle/CC_Base_R_Upperarm/CC_Base_R_Forearm/CC_Base_R_Hand/HoldGunAR/AR-181_01
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_R_Clavicle/CC_Base_R_Upperarm/CC_Base_R_Forearm/CC_Base_R_Hand/HoldGunAR/AR-181_01/add1_lo
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_R_Clavicle/CC_Base_R_Upperarm/CC_Base_R_Forearm/CC_Base_R_Hand/HoldGunAR/AR-181_01/add2_lo
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_R_Clavicle/CC_Base_R_Upperarm/CC_Base_R_Forearm/CC_Base_R_Hand/HoldGunAR/AR-181_01/body_lo
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_R_Clavicle/CC_Base_R_Upperarm/CC_Base_R_Forearm/CC_Base_R_Hand/HoldGunAR/AR-181_01/charge_lo
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_R_Clavicle/CC_Base_R_Upperarm/CC_Base_R_Forearm/CC_Base_R_Hand/HoldGunAR/AR-181_01/clip_lo
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_R_Clavicle/CC_Base_R_Upperarm/CC_Base_R_Forearm/CC_Base_R_Hand/HoldGunAR/AR-181_01/fromt_lo
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_R_Clavicle/CC_Base_R_Upperarm/CC_Base_R_Forearm/CC_Base_R_Hand/HoldGunAR/AR-181_01/gear_lo
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_R_Clavicle/CC_Base_R_Upperarm/CC_Base_R_Forearm/CC_Base_R_Hand/HoldGunAR/AR-181_01/hip_lo
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_R_Clavicle/CC_Base_R_Upperarm/CC_Base_R_Forearm/CC_Base_R_Hand/HoldGunAR/AR-181_01/hold_lo
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_R_Clavicle/CC_Base_R_Upperarm/CC_Base_R_Forearm/CC_Base_R_Hand/HoldGunAR/AR-181_01/plate_lo
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_R_Clavicle/CC_Base_R_Upperarm/CC_Base_R_Forearm/CC_Base_R_Hand/HoldGunAR/AR-181_01/reflex_lo
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_R_Clavicle/CC_Base_R_Upperarm/CC_Base_R_Forearm/CC_Base_R_Hand/HoldGunAR/AR-181_01/silencer_lo
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_R_Clavicle/CC_Base_R_Upperarm/CC_Base_R_Forearm/CC_Base_R_Hand/HoldGunAR/AR-181_01/stock_lo
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_R_Clavicle/CC_Base_R_Upperarm/CC_Base_R_Forearm/CC_Base_R_Hand/HoldGunAR/AR-181_01/trigger_lo
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_R_Clavicle/CC_Base_R_Upperarm/CC_Base_R_Forearm/CC_Base_R_Hand/AimGunShotgun
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_R_Clavicle/CC_Base_R_Upperarm/CC_Base_R_Forearm/CC_Base_R_Hand/AimGunShotgun/LowPolyForBake_4800
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_R_Clavicle/CC_Base_R_Upperarm/CC_Base_R_Forearm/CC_Base_R_Hand/AimGunShotgun/LowPolyForBake_4800/muzzle
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_R_Clavicle/CC_Base_R_Upperarm/CC_Base_R_Forearm/CC_Base_R_Hand/AimGunShotgun/LowPolyForBake_4800/gunAudio
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_R_Clavicle/CC_Base_R_Upperarm/CC_Base_R_Forearm/CC_Base_R_Hand/AimGunShotgun/LowPolyForBake_4800/polySurface185
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_R_Clavicle/CC_Base_R_Upperarm/CC_Base_R_Forearm/CC_Base_R_Hand/AimGunAK
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_R_Clavicle/CC_Base_R_Upperarm/CC_Base_R_Forearm/CC_Base_R_Hand/AimGunAK/Cube.007
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_R_Clavicle/CC_Base_R_Upperarm/CC_Base_R_Forearm/CC_Base_R_Hand/AimGunAK/Cylinder.002
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_R_Clavicle/CC_Base_R_Upperarm/CC_Base_R_Forearm/CC_Base_R_Hand/AimGunAK/muzzle
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_R_Clavicle/CC_Base_R_Upperarm/CC_Base_R_Forearm/CC_Base_R_Hand/AimGunAK/gunAudio
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_R_Clavicle/CC_Base_R_Upperarm/CC_Base_R_Forearm/CC_Base_R_Hand/AimGunGlock
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_R_Clavicle/CC_Base_R_Upperarm/CC_Base_R_Forearm/CC_Base_R_Hand/AimGunGlock/Ejector_low
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_R_Clavicle/CC_Base_R_Upperarm/CC_Base_R_Forearm/CC_Base_R_Hand/AimGunGlock/Frame_low
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_R_Clavicle/CC_Base_R_Upperarm/CC_Base_R_Forearm/CC_Base_R_Hand/AimGunGlock/Hammer_low
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_R_Clavicle/CC_Base_R_Upperarm/CC_Base_R_Forearm/CC_Base_R_Hand/AimGunGlock/Slide
+      Stop_low
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_R_Clavicle/CC_Base_R_Upperarm/CC_Base_R_Forearm/CC_Base_R_Hand/AimGunGlock/Slide_low
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_R_Clavicle/CC_Base_R_Upperarm/CC_Base_R_Forearm/CC_Base_R_Hand/AimGunGlock/Trigger_low
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_R_Clavicle/CC_Base_R_Upperarm/CC_Base_R_Forearm/CC_Base_R_Hand/AimGunGlock/gunAudio
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_R_Clavicle/CC_Base_R_Upperarm/CC_Base_R_Forearm/CC_Base_R_Hand/AimGunGlock/muzzle
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_R_Clavicle/CC_Base_R_Upperarm/CC_Base_R_Forearm/CC_Base_R_Hand/AimGunAR
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_R_Clavicle/CC_Base_R_Upperarm/CC_Base_R_Forearm/CC_Base_R_Hand/AimGunAR/AR-181_01
+      (1)
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_R_Clavicle/CC_Base_R_Upperarm/CC_Base_R_Forearm/CC_Base_R_Hand/AimGunAR/AR-181_01
+      (1)/add1_lo
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_R_Clavicle/CC_Base_R_Upperarm/CC_Base_R_Forearm/CC_Base_R_Hand/AimGunAR/AR-181_01
+      (1)/add2_lo
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_R_Clavicle/CC_Base_R_Upperarm/CC_Base_R_Forearm/CC_Base_R_Hand/AimGunAR/AR-181_01
+      (1)/body_lo
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_R_Clavicle/CC_Base_R_Upperarm/CC_Base_R_Forearm/CC_Base_R_Hand/AimGunAR/AR-181_01
+      (1)/charge_lo
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_R_Clavicle/CC_Base_R_Upperarm/CC_Base_R_Forearm/CC_Base_R_Hand/AimGunAR/AR-181_01
+      (1)/clip_lo
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_R_Clavicle/CC_Base_R_Upperarm/CC_Base_R_Forearm/CC_Base_R_Hand/AimGunAR/AR-181_01
+      (1)/fromt_lo
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_R_Clavicle/CC_Base_R_Upperarm/CC_Base_R_Forearm/CC_Base_R_Hand/AimGunAR/AR-181_01
+      (1)/gear_lo
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_R_Clavicle/CC_Base_R_Upperarm/CC_Base_R_Forearm/CC_Base_R_Hand/AimGunAR/AR-181_01
+      (1)/hip_lo
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_R_Clavicle/CC_Base_R_Upperarm/CC_Base_R_Forearm/CC_Base_R_Hand/AimGunAR/AR-181_01
+      (1)/hold_lo
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_R_Clavicle/CC_Base_R_Upperarm/CC_Base_R_Forearm/CC_Base_R_Hand/AimGunAR/AR-181_01
+      (1)/plate_lo
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_R_Clavicle/CC_Base_R_Upperarm/CC_Base_R_Forearm/CC_Base_R_Hand/AimGunAR/AR-181_01
+      (1)/reflex_lo
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_R_Clavicle/CC_Base_R_Upperarm/CC_Base_R_Forearm/CC_Base_R_Hand/AimGunAR/AR-181_01
+      (1)/silencer_lo
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_R_Clavicle/CC_Base_R_Upperarm/CC_Base_R_Forearm/CC_Base_R_Hand/AimGunAR/AR-181_01
+      (1)/stock_lo
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_R_Clavicle/CC_Base_R_Upperarm/CC_Base_R_Forearm/CC_Base_R_Hand/AimGunAR/AR-181_01
+      (1)/trigger_lo
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_R_Clavicle/CC_Base_R_Upperarm/CC_Base_R_Forearm/CC_Base_R_Hand/AimGunAR/muzzle
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_R_Clavicle/CC_Base_R_Upperarm/CC_Base_R_Forearm/CC_Base_R_Hand/AimGunAR/gunAudio
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_R_Clavicle/CC_Base_R_Upperarm/CC_Base_R_UpperarmTwist01
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_R_Clavicle/CC_Base_R_Upperarm/CC_Base_R_UpperarmTwist01/CC_Base_R_UpperarmTwist02
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_R_RibsTwist
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_R_RibsTwist/CC_Base_R_Breast
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/Optimus_Jetpack
+      1
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/Optimus_Jetpack
+      1/Optimus_FlightPack_ARM
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/Optimus_Jetpack
+      1/Optimus_FlightPack_ARM/Root
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/Optimus_Jetpack
+      1/Optimus_FlightPack_ARM/Root/Bip_Spine_1
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/Optimus_Jetpack
+      1/Optimus_FlightPack_ARM/Root/Bip_Spine_1/Bip_LowerArm_L
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/Optimus_Jetpack
+      1/Optimus_FlightPack_ARM/Root/Bip_Spine_1/Bip_LowerArm_L/Bip_LowerArm_L_end
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/Optimus_Jetpack
+      1/Optimus_FlightPack_ARM/Root/Bip_Spine_1/Bip_LowerArm_R
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/Optimus_Jetpack
+      1/Optimus_FlightPack_ARM/Root/Bip_Spine_1/Bip_LowerArm_R/Bip_LowerArm_R_end
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/Optimus_Jetpack
+      1/Optimus_FlightPack_ARM/Root/Bip_Spine_1/Bn_LowerWing_1_L
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/Optimus_Jetpack
+      1/Optimus_FlightPack_ARM/Root/Bip_Spine_1/Bn_LowerWing_1_L/Bn_LowerWing_2_L
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/Optimus_Jetpack
+      1/Optimus_FlightPack_ARM/Root/Bip_Spine_1/Bn_LowerWing_1_L/Bn_LowerWing_2_L/Bn_LowerWing_2_L_end
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/Optimus_Jetpack
+      1/Optimus_FlightPack_ARM/Root/Bip_Spine_1/Bn_LowerWing_1_R
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/Optimus_Jetpack
+      1/Optimus_FlightPack_ARM/Root/Bip_Spine_1/Bn_LowerWing_1_R/Bn_LowerWing_2_R
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/Optimus_Jetpack
+      1/Optimus_FlightPack_ARM/Root/Bip_Spine_1/Bn_LowerWing_1_R/Bn_LowerWing_2_R/Bn_LowerWing_2_R_end
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/Optimus_Jetpack
+      1/Optimus_FlightPack_ARM/Root/Bip_Spine_1/Bn_Thruster_L
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/Optimus_Jetpack
+      1/Optimus_FlightPack_ARM/Root/Bip_Spine_1/Bn_Thruster_L/Bn_UpperArm_L
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/Optimus_Jetpack
+      1/Optimus_FlightPack_ARM/Root/Bip_Spine_1/Bn_Thruster_L/Bn_UpperArm_L/Bn_LowerArm_L
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/Optimus_Jetpack
+      1/Optimus_FlightPack_ARM/Root/Bip_Spine_1/Bn_Thruster_L/Bn_UpperArm_L/Bn_LowerArm_L/Bn_Hand_L
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/Optimus_Jetpack
+      1/Optimus_FlightPack_ARM/Root/Bip_Spine_1/Bn_Thruster_L/Bn_UpperArm_L/Bn_LowerArm_L/Bn_Hand_L/Bn_Hand_L_end
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/Optimus_Jetpack
+      1/Optimus_FlightPack_ARM/Root/Bip_Spine_1/Bn_Thruster_L/Bn_UpperWing_1_L
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/Optimus_Jetpack
+      1/Optimus_FlightPack_ARM/Root/Bip_Spine_1/Bn_Thruster_L/Bn_UpperWing_1_L/Bn_UpperWing_2_L
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/Optimus_Jetpack
+      1/Optimus_FlightPack_ARM/Root/Bip_Spine_1/Bn_Thruster_L/Bn_UpperWing_1_L/Bn_UpperWing_2_L/Bn_UpperWing_2_L_end
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/Optimus_Jetpack
+      1/Optimus_FlightPack_ARM/Root/Bip_Spine_1/Bn_Thruster_R
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/Optimus_Jetpack
+      1/Optimus_FlightPack_ARM/Root/Bip_Spine_1/Bn_Thruster_R/Bn_UpperArm_R
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/Optimus_Jetpack
+      1/Optimus_FlightPack_ARM/Root/Bip_Spine_1/Bn_Thruster_R/Bn_UpperArm_R/Bn_LowerArm_R
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/Optimus_Jetpack
+      1/Optimus_FlightPack_ARM/Root/Bip_Spine_1/Bn_Thruster_R/Bn_UpperArm_R/Bn_LowerArm_R/Bn_Hand_R
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/Optimus_Jetpack
+      1/Optimus_FlightPack_ARM/Root/Bip_Spine_1/Bn_Thruster_R/Bn_UpperArm_R/Bn_LowerArm_R/Bn_Hand_R/Bn_Hand_R_end
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/Optimus_Jetpack
+      1/Optimus_FlightPack_ARM/Root/Bip_Spine_1/Bn_Thruster_R/Bn_UpperWing_1_R
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/Optimus_Jetpack
+      1/Optimus_FlightPack_ARM/Root/Bip_Spine_1/Bn_Thruster_R/Bn_UpperWing_1_R/Bn_UpperWing_2_R
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/Optimus_Jetpack
+      1/Optimus_FlightPack_ARM/Root/Bip_Spine_1/Bn_Thruster_R/Bn_UpperWing_1_R/Bn_UpperWing_2_R/Bn_UpperWing_2_R_end
+    m_Weight: 1
+  - m_Path: Sci-FI Warrior Armor/RL_BoneRoot/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/Optimus_Jetpack
+      1/Optimus_JetPack_smd
+    m_Weight: 1

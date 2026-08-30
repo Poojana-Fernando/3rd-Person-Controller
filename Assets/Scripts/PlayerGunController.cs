@@ -193,6 +193,9 @@ public class PlayerGunController : MonoBehaviour
 
             if (aimCamera.upperBodyAim == null && upperBodyAim != null)
                 aimCamera.upperBodyAim = upperBodyAim;
+
+            if (aimCamera.aimCrosshair == null && crosshair != null)
+                aimCamera.SetAimCrosshair(crosshair.GetComponent<RectTransform>());
         }
 
         EnsurePersistentFireAudioSource();
@@ -621,6 +624,8 @@ public class PlayerGunController : MonoBehaviour
 
     private void RefreshGunLayerTarget()
     {
+        // Slide owns full-body pose — drop Gun Layer. Crouch keeps Gun Layer (arms/head)
+        // so hold/aim coexist with Base Layer crouch legs.
         if (_controller != null && _controller.isSliding)
         {
             _targetGunLayerWeight = 0f;
@@ -727,7 +732,7 @@ public class PlayerGunController : MonoBehaviour
     private Vector3 GetGunPointingDirection()
     {
         if (aimCamera != null && aimCamera.IsActive)
-            return aimCamera.transform.forward;
+            return aimCamera.GetAimDirection();
 
         if (_muzzle != null)
             return _muzzle.forward;
@@ -777,11 +782,11 @@ public class PlayerGunController : MonoBehaviour
 
         float range = Mathf.Max(1f, _weapon.maxRange);
         if (!TryGetGunAimPoint(out Vector3 aimPoint))
-            aimPoint = _muzzle.position + aimCamera.transform.forward * range;
+            aimPoint = _muzzle.position + aimCamera.GetAimDirection() * range;
 
         Vector3 baseDirection = aimPoint - _muzzle.position;
         if (baseDirection.sqrMagnitude < 0.001f)
-            baseDirection = aimCamera.transform.forward;
+            baseDirection = aimCamera.GetAimDirection();
         baseDirection.Normalize();
 
         int pellets = Mathf.Max(1, _weapon.pelletsPerShot);
@@ -843,11 +848,11 @@ public class PlayerGunController : MonoBehaviour
 
         float range = Mathf.Max(1f, _weapon.maxRange);
         if (!TryGetAimPoint(out Vector3 cameraAimPoint))
-            cameraAimPoint = _muzzle.position + aimCamera.transform.forward * range;
+            cameraAimPoint = _muzzle.position + aimCamera.GetAimDirection() * range;
 
         Vector3 fireDirection = cameraAimPoint - _muzzle.position;
         if (fireDirection.sqrMagnitude < 0.001f)
-            fireDirection = aimCamera.transform.forward;
+            fireDirection = aimCamera.GetAimDirection();
         else
             fireDirection.Normalize();
 
@@ -865,7 +870,11 @@ public class PlayerGunController : MonoBehaviour
     {
         float range = _weapon != null ? Mathf.Max(1f, _weapon.maxRange) : 120f;
         aimPoint = transform.position + transform.forward * range;
-        Ray cameraRay = aimCamera.GetScreenCenterRay();
+
+        if (aimCamera == null)
+            return false;
+
+        Ray cameraRay = aimCamera.GetAimRay();
 
         if (Physics.Raycast(cameraRay, out RaycastHit hit, range, hitMask, QueryTriggerInteraction.Ignore))
         {

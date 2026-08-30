@@ -20,8 +20,8 @@ public class UpperBodyAim : MonoBehaviour
     [SerializeField] private float blendSpeed = 8f;
 
     [Header("Aim Pose")]
-    [Tooltip("Spine yaw twist while aiming. Negative = left (shows right-hand gun on shoulder cam). Positive = right.")]
-    [SerializeField] private float aimSpineYawOffset = -14f;
+    [Tooltip("Twists the upper body horizontally while aiming. For a right-hand gun + right-shoulder camera, use a negative value (e.g. -18) to rotate the torso left and show the weapon.")]
+    [SerializeField] private float aimSpineYawOffset = 40f;
 
     [Header("Recoil")]
     [SerializeField] private float recoilStiffness = 120f;

@@ -9,15 +9,114 @@ public static class PlayerCloakClothSetup
     private const string PlayerPath = "ThirdPersonController_LITE";
     private const string WarriorName = "Sci-FI Warrior Armor";
     private const string BakedMeshPath = "Assets/red-leather-cape-static-and-blowing/CapeClothBaked.asset";
+    private const string GenericBakedMeshFolder = "Assets/Generated/ClothMeshes";
 
-    // Collar lock only — enough to stop spikes, not so much the cape looks rigid.
-    private const float PinTopFraction = 0.15f;
-    private const float SoftBandFraction = 0.22f;
-    // Conservative world travel (meters). Large values + soft stretch = the spikes in the recording.
-    private const float HemMaxDistance = 0.55f;
-    private const float MidMaxDistance = 0.22f;
+    // Coherent sheet: thick double-sided capes tear if maxDistance is large + stretch is soft.
+    private const float HardPinVertFraction = 0.12f; // top 12% locked to neck
+    private const float SoftPinVertFraction = 0.28f; // upper body gently follows skinned pose
+    private const float HemMaxDistance = 0.32f;      // enough sway, not enough to rip layers apart
+    private const float MidMaxDistance = 0.14f;
+    private const float SoftNearPinMaxDistance = 0.04f;
 
-    private static readonly string[] CloakCandidateNames = { "cape", "cloak" };
+    private static readonly string[] CloakCandidateNames = { "capeeee", "cape", "cloak" };
+
+    [MenuItem("Tools/Player/Fix Cloak Cloth Coherence")]
+    public static void FixCloakClothCoherence()
+    {
+        GameObject player = GameObject.Find(PlayerPath);
+        if (player == null)
+        {
+            Debug.LogError($"[CloakCloth] '{PlayerPath}' not found.");
+            return;
+        }
+
+        Transform warrior = FindChild(player.transform, WarriorName);
+        if (warrior == null)
+        {
+            Debug.LogError($"[CloakCloth] '{WarriorName}' not found under player.");
+            return;
+        }
+
+        Transform cloakTransform = FindCloakMesh(warrior);
+        if (cloakTransform == null)
+        {
+            Debug.LogError("[CloakCloth] No cape/cloak mesh found under warrior.");
+            return;
+        }
+
+        GameObject cloak = cloakTransform.gameObject;
+        Undo.RegisterFullObjectHierarchyUndo(cloak, "Fix Cloak Cloth Coherence");
+
+        SkinnedMeshRenderer skinned = cloak.GetComponent<SkinnedMeshRenderer>();
+        if (skinned == null || skinned.sharedMesh == null)
+        {
+            Debug.LogError("[CloakCloth] Cloak needs SkinnedMeshRenderer + mesh. Run Setup first.");
+            return;
+        }
+
+        // Non-uniform scale makes Unity Cloth tear layers apart — bake it away.
+        Vector3 scaleToBake = cloak.transform.localScale;
+        bool needsScaleBake = Mathf.Abs(scaleToBake.x - 1f) > 0.01f
+            || Mathf.Abs(scaleToBake.y - 1f) > 0.01f
+            || Mathf.Abs(scaleToBake.z - 1f) > 0.01f
+            || Mathf.Abs(scaleToBake.x - scaleToBake.y) > 0.01f
+            || Mathf.Abs(scaleToBake.y - scaleToBake.z) > 0.01f;
+
+        PlayerCloakCloth runtime = cloak.GetComponent<PlayerCloakCloth>();
+        if (runtime != null)
+            Undo.DestroyObjectImmediate(runtime);
+        Cloth existingCloth = cloak.GetComponent<Cloth>();
+        if (existingCloth != null)
+            Undo.DestroyObjectImmediate(existingCloth);
+
+        Mesh mesh = skinned.sharedMesh;
+        if (needsScaleBake)
+        {
+            string bakePath = ResolveBakeAssetPath(cloak.name + "_coherent", mesh);
+            mesh = BakeScaleIntoMeshAsset(mesh, scaleToBake, bakePath);
+            cloak.transform.localScale = Vector3.one;
+            skinned.sharedMesh = mesh;
+            skinned.localBounds = mesh.bounds;
+            Debug.Log($"[CloakCloth] Baked non-uniform scale {scaleToBake} → localScale=1.");
+        }
+
+        skinned.rootBone = cloak.transform;
+        skinned.bones = new[] { cloak.transform };
+        skinned.updateWhenOffscreen = true;
+
+        Cloth cloth = Undo.AddComponent<Cloth>(cloak);
+        ApplyCoherentClothSettings(cloth);
+        ApplyPinCoefficients(cloth, mesh, cloak.transform);
+
+        runtime = Undo.AddComponent<PlayerCloakCloth>(cloak);
+        SerializedObject runtimeSo = new SerializedObject(runtime);
+        runtimeSo.FindProperty("cloth").objectReferenceValue = cloth;
+        runtimeSo.FindProperty("forceNoColliders").boolValue = true;
+        runtimeSo.ApplyModifiedPropertiesWithoutUndo();
+        runtime.ApplyNoCollision();
+
+        int ignoreRaycast = LayerMask.NameToLayer("Ignore Raycast");
+        if (ignoreRaycast >= 0)
+            cloak.layer = ignoreRaycast;
+
+        EditorUtility.SetDirty(cloak);
+        EditorUtility.SetDirty(skinned);
+        EditorUtility.SetDirty(cloth);
+        EditorSceneManager.MarkSceneDirty(SceneManager.GetActiveScene());
+        EditorSceneManager.SaveOpenScenes();
+        AssetDatabase.SaveAssets();
+
+        Debug.Log(
+            $"[CloakCloth] Coherence fix on '{cloak.name}': high stretch, modest hem travel, " +
+            "uniform scale, no body colliders. Test in Play Mode.");
+    }
+
+    [MenuItem("Tools/Player/Retune Cloak Soft Cloth (AC drape)")]
+    public static void RetuneCloakSoftCloth()
+    {
+        // Soft retune alone caused tearing on thick capes — route to coherence fix.
+        FixCloakClothCoherence();
+    }
 
     [MenuItem("Tools/Player/Setup Cloak Cloth Physics")]
     public static void SetupCloakClothPhysics()
@@ -103,14 +202,16 @@ public static class PlayerCloakClothSetup
 
         Transform spine02 = FindChild(warrior, "CC_Base_Spine02");
         Transform neck = FindChild(warrior, "CC_Base_NeckTwist01");
-        Transform attachParent = spine02 != null ? spine02 : (neck != null ? neck : warrior);
+        // Prefer neck so the cloak hangs from the neck/collar area.
+        Transform attachParent = neck != null ? neck : (spine02 != null ? spine02 : warrior);
 
-        if (!IsUnder(cloak.transform, attachParent))
+        // Always reparent to neck (preserve world pose) even if currently under spine.
+        if (cloak.transform.parent != attachParent)
         {
             Vector3 worldPos = cloak.transform.position;
             Quaternion worldRot = cloak.transform.rotation;
             Vector3 worldScale = cloak.transform.lossyScale;
-            Undo.SetTransformParent(cloak.transform, attachParent, "Parent cloak to spine");
+            Undo.SetTransformParent(cloak.transform, attachParent, "Parent cloak to neck");
             cloak.transform.position = worldPos;
             cloak.transform.rotation = worldRot;
             Vector3 parentScale = attachParent.lossyScale;
@@ -123,7 +224,8 @@ public static class PlayerCloakClothSetup
         // Huge local scale (~100) makes Unity Cloth explode into rigid spikes.
         // Bake scale into mesh verts and normalize localScale to 1.
         Vector3 scaleToBake = ResolveScaleToBake(cloak.transform, bakeSource);
-        Mesh bakedMesh = BakeScaleIntoMeshAsset(bakeSource, scaleToBake, BakedMeshPath);
+        string bakePath = ResolveBakeAssetPath(cloak.name, bakeSource);
+        Mesh bakedMesh = BakeScaleIntoMeshAsset(bakeSource, scaleToBake, bakePath);
         cloak.transform.localScale = Vector3.one;
 
         skinned.sharedMesh = bakedMesh;
@@ -152,32 +254,21 @@ public static class PlayerCloakClothSetup
 
         Cloth cloth = Undo.AddComponent<Cloth>(cloak);
 
-        // Stable AC-style drape: enough give to sway, stiff enough not to spike.
-        cloth.stretchingStiffness = 0.72f;
-        cloth.bendingStiffness = 0.22f;
-        cloth.damping = 0.18f;
-        cloth.useGravity = true;
-        cloth.externalAcceleration = new Vector3(0f, -2.5f, 0f);
-        cloth.randomAcceleration = new Vector3(0.5f, 0.15f, 0.5f);
-        cloth.worldVelocityScale = 0.8f;
-        cloth.worldAccelerationScale = 1.0f;
-        cloth.friction = 0.25f;
-        cloth.collisionMassScale = 0f;
-        cloth.enableContinuousCollision = false;
-        cloth.useVirtualParticles = 1f;
-        cloth.clothSolverFrequency = 120f;
-        cloth.useTethers = true;
-        cloth.stiffnessFrequency = 8f;
+        ApplyCoherentClothSettings(cloth);
+        // Explicitly no cloth↔body collisions (player capsule / spheres).
         cloth.capsuleColliders = System.Array.Empty<CapsuleCollider>();
         cloth.sphereColliders = System.Array.Empty<ClothSphereColliderPair>();
 
         ApplyPinCoefficients(cloth, bakedMesh, cloak.transform);
 
-        PlayerCloakCloth runtime = Undo.AddComponent<PlayerCloakCloth>(cloak);
+        PlayerCloakCloth runtime = cloak.GetComponent<PlayerCloakCloth>();
+        if (runtime == null)
+            runtime = Undo.AddComponent<PlayerCloakCloth>(cloak);
         SerializedObject runtimeSo = new SerializedObject(runtime);
         runtimeSo.FindProperty("cloth").objectReferenceValue = cloth;
         runtimeSo.FindProperty("forceNoColliders").boolValue = true;
         runtimeSo.ApplyModifiedPropertiesWithoutUndo();
+        runtime.ApplyNoCollision();
 
         EditorUtility.SetDirty(cloak);
         EditorUtility.SetDirty(skinned);
@@ -187,8 +278,26 @@ public static class PlayerCloakClothSetup
         AssetDatabase.SaveAssets();
 
         Debug.Log(
-            $"[CloakCloth] '{cloak.name}' fixed: baked scale {scaleToBake} into mesh, " +
-            "localScale=1, stable Cloth + collar pins. Layer=Ignore Raycast.");
+            $"[CloakCloth] '{cloak.name}' attached to '{attachParent.name}', " +
+            $"baked scale {scaleToBake}, no body collisions, Layer=Ignore Raycast.");
+    }
+
+    private static string ResolveBakeAssetPath(string cloakName, Mesh bakeSource)
+    {
+        string path = bakeSource != null ? AssetDatabase.GetAssetPath(bakeSource) : null;
+        if (!string.IsNullOrEmpty(path)
+            && path.IndexOf("red-leather-cape", System.StringComparison.OrdinalIgnoreCase) >= 0)
+            return BakedMeshPath;
+
+        if (!AssetDatabase.IsValidFolder("Assets/Generated"))
+            AssetDatabase.CreateFolder("Assets", "Generated");
+        if (!AssetDatabase.IsValidFolder(GenericBakedMeshFolder))
+            AssetDatabase.CreateFolder("Assets/Generated", "ClothMeshes");
+
+        string safe = string.IsNullOrEmpty(cloakName) ? "Cloak" : cloakName;
+        foreach (char c in System.IO.Path.GetInvalidFileNameChars())
+            safe = safe.Replace(c, '_');
+        return $"{GenericBakedMeshFolder}/{safe}_ClothBaked.asset";
     }
 
     private static Vector3 ResolveScaleToBake(Transform cloakTransform, Mesh bakeSource)
@@ -216,10 +325,22 @@ public static class PlayerCloakClothSetup
             return null;
 
         string path = AssetDatabase.GetAssetPath(mesh);
-        if (!string.IsNullOrEmpty(path) && path.EndsWith(".fbx", System.StringComparison.OrdinalIgnoreCase))
-            return mesh;
+        // Prefer the mesh already on the cloak (FBX sub-asset or previous bake source).
+        if (!string.IsNullOrEmpty(path))
+        {
+            // If this is one of our baked assets, fall back to the original FBX cape mesh.
+            if (path.IndexOf("ClothBaked", System.StringComparison.OrdinalIgnoreCase) >= 0
+                || path.IndexOf("/Generated/", System.StringComparison.OrdinalIgnoreCase) >= 0)
+            {
+                // continue to FBX lookup below for red-leather only
+            }
+            else
+            {
+                return mesh;
+            }
+        }
 
-        // If current mesh is a previous bake, pull the FBX cape mesh instead.
+        // Legacy red-leather bake recovery.
         Object[] fbxAssets = AssetDatabase.LoadAllAssetsAtPath(
             "Assets/red-leather-cape-static-and-blowing/source/model.fbx");
         for (int i = 0; i < fbxAssets.Length; i++)
@@ -465,6 +586,37 @@ public static class PlayerCloakClothSetup
         }
     }
 
+    private static void ApplyCoherentClothSettings(Cloth cloth)
+    {
+        if (cloth == null)
+            return;
+
+        // High stretch keeps double-sided layers from ripping; low bend lets the sheet fold.
+        cloth.stretchingStiffness = 0.92f;
+        cloth.bendingStiffness = 0.18f;
+        cloth.damping = 0.12f;
+        cloth.useGravity = true;
+        cloth.externalAcceleration = new Vector3(0f, -3.5f, 0f);
+        cloth.randomAcceleration = new Vector3(0.25f, 0.08f, 0.25f);
+        cloth.worldVelocityScale = 1.05f;
+        cloth.worldAccelerationScale = 1.2f;
+        cloth.friction = 0.2f;
+        cloth.collisionMassScale = 0f;
+        cloth.enableContinuousCollision = false;
+        cloth.useVirtualParticles = 1f;
+        cloth.clothSolverFrequency = 180f;
+        cloth.useTethers = true;
+        cloth.stiffnessFrequency = 8f;
+        cloth.capsuleColliders = System.Array.Empty<CapsuleCollider>();
+        cloth.sphereColliders = System.Array.Empty<ClothSphereColliderPair>();
+    }
+
+    private static void ApplySoftClothSettings(Cloth cloth)
+    {
+        // Kept for compatibility; soft settings tear thick cape meshes — use coherent.
+        ApplyCoherentClothSettings(cloth);
+    }
+
     private static void ApplyPinCoefficients(Cloth cloth, Mesh mesh, Transform cloakTransform)
     {
         if (cloth == null || mesh == null || cloakTransform == null)
@@ -474,50 +626,52 @@ public static class PlayerCloakClothSetup
         if (vertices == null || vertices.Length == 0)
             return;
 
-        float[] worldY = new float[vertices.Length];
-        float minY = float.MaxValue;
-        float maxY = float.MinValue;
+        int count = vertices.Length;
+        var ranked = new System.Collections.Generic.List<(int index, float y)>(count);
         Matrix4x4 localToWorld = cloakTransform.localToWorldMatrix;
-        for (int i = 0; i < vertices.Length; i++)
+        for (int i = 0; i < count; i++)
         {
             float y = localToWorld.MultiplyPoint3x4(vertices[i]).y;
-            worldY[i] = y;
-            if (y < minY) minY = y;
-            if (y > maxY) maxY = y;
+            ranked.Add((i, y));
         }
 
-        float height = Mathf.Max(0.0001f, maxY - minY);
-        float pinFloor = maxY - height * PinTopFraction;
-        float softFloor = pinFloor - height * SoftBandFraction;
+        ranked.Sort((a, b) => b.y.CompareTo(a.y)); // highest (collar) first
 
-        ClothSkinningCoefficient[] coeffs = new ClothSkinningCoefficient[vertices.Length];
-        int pinned = 0;
-        for (int i = 0; i < vertices.Length; i++)
+        int hardPinCount = Mathf.Clamp(Mathf.CeilToInt(count * HardPinVertFraction), 12, count);
+        int softEnd = Mathf.Clamp(hardPinCount + Mathf.CeilToInt(count * SoftPinVertFraction), hardPinCount, count);
+
+        ClothSkinningCoefficient[] coeffs = new ClothSkinningCoefficient[count];
+        for (int i = 0; i < count; i++)
         {
-            float y = worldY[i];
+            coeffs[i].maxDistance = HemMaxDistance;
             coeffs[i].collisionSphereDistance = 0f;
+        }
 
-            if (y >= pinFloor)
+        for (int rank = 0; rank < count; rank++)
+        {
+            int vi = ranked[rank].index;
+            coeffs[vi].collisionSphereDistance = 0f;
+
+            if (rank < hardPinCount)
             {
-                coeffs[i].maxDistance = 0f;
-                pinned++;
+                coeffs[vi].maxDistance = 0f;
             }
-            else if (y >= softFloor)
+            else if (rank < softEnd)
             {
-                float t = Mathf.InverseLerp(pinFloor, softFloor, y);
-                coeffs[i].maxDistance = Mathf.Lerp(0.02f, MidMaxDistance, Mathf.SmoothStep(0f, 1f, t));
+                float t = Mathf.InverseLerp(hardPinCount, softEnd - 1, rank);
+                coeffs[vi].maxDistance = Mathf.Lerp(SoftNearPinMaxDistance, MidMaxDistance, Mathf.SmoothStep(0f, 1f, t));
             }
             else
             {
-                float t = Mathf.InverseLerp(softFloor, minY, y);
-                coeffs[i].maxDistance = Mathf.Lerp(MidMaxDistance, HemMaxDistance, Mathf.SmoothStep(0f, 1f, t));
+                float t = Mathf.InverseLerp(softEnd, count - 1, rank);
+                coeffs[vi].maxDistance = Mathf.Lerp(MidMaxDistance, HemMaxDistance, Mathf.SmoothStep(0f, 1f, t));
             }
         }
 
         cloth.coefficients = coeffs;
         Debug.Log(
-            $"[CloakCloth] Pins {pinned}/{vertices.Length} collar verts " +
-            $"(worldY {minY:F2}..{maxY:F2}). Hem maxDistance={HemMaxDistance:F2}m.");
+            $"[CloakCloth] Rank pins: {hardPinCount}/{count} hard + {softEnd - hardPinCount} soft. " +
+            $"Hem maxDistance={HemMaxDistance:F2}m.");
     }
 
     private static Transform FindChild(Transform root, string exactName)

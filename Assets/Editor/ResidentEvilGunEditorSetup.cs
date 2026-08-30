@@ -121,6 +121,378 @@ public static class ResidentEvilGunEditorSetup
         Debug.Log("Resident Evil Gun setup complete.");
     }
 
+    private const string CrouchMaskPath = "Assets/Animations/CrouchLowerBodyMask.mask";
+    private const string CrouchFolder = "Assets/Animations/crouching";
+
+    [MenuItem("Tools/Player/Setup Crouch Aim Masks")]
+    public static void SetupCrouchAimMasks()
+    {
+        Directory.CreateDirectory("Assets/Animations");
+        CreateSpineMiddleMask();
+        CreateCrouchLowerBodyMask();
+        WireAnimatorCrouch();
+        AssetDatabase.SaveAssets();
+        AssetDatabase.Refresh();
+        Debug.Log("Crouch aim masks + IsCrouching blend tree setup complete.");
+    }
+
+    [MenuItem("Tools/Player/Force Exit Play Mode")]
+    public static void ForceExitPlayMode()
+    {
+        if (EditorApplication.isPlaying)
+            EditorApplication.isPlaying = false;
+    }
+
+    private static void CreateCrouchLowerBodyMask()
+    {
+        var mask = AssetDatabase.LoadAssetAtPath<AvatarMask>(CrouchMaskPath);
+        if (mask == null)
+        {
+            mask = new AvatarMask();
+            AssetDatabase.CreateAsset(mask, CrouchMaskPath);
+        }
+
+        mask.transformCount = 0;
+        mask.SetHumanoidBodyPartActive(AvatarMaskBodyPart.Root, true);
+        mask.SetHumanoidBodyPartActive(AvatarMaskBodyPart.Body, false);
+        mask.SetHumanoidBodyPartActive(AvatarMaskBodyPart.Head, false);
+        mask.SetHumanoidBodyPartActive(AvatarMaskBodyPart.LeftLeg, true);
+        mask.SetHumanoidBodyPartActive(AvatarMaskBodyPart.RightLeg, true);
+        mask.SetHumanoidBodyPartActive(AvatarMaskBodyPart.LeftArm, false);
+        mask.SetHumanoidBodyPartActive(AvatarMaskBodyPart.RightArm, false);
+        mask.SetHumanoidBodyPartActive(AvatarMaskBodyPart.LeftFingers, false);
+        mask.SetHumanoidBodyPartActive(AvatarMaskBodyPart.RightFingers, false);
+        mask.SetHumanoidBodyPartActive(AvatarMaskBodyPart.LeftFootIK, true);
+        mask.SetHumanoidBodyPartActive(AvatarMaskBodyPart.RightFootIK, true);
+        mask.SetHumanoidBodyPartActive(AvatarMaskBodyPart.LeftHandIK, false);
+        mask.SetHumanoidBodyPartActive(AvatarMaskBodyPart.RightHandIK, false);
+        EditorUtility.SetDirty(mask);
+    }
+
+    private static void WireAnimatorCrouch()
+    {
+        var controller = AssetDatabase.LoadAssetAtPath<AnimatorController>(ControllerPath);
+        if (controller == null)
+        {
+            Debug.LogError("Animator controller not found.");
+            return;
+        }
+
+        EnsureParameter(controller, "IsCrouching", AnimatorControllerParameterType.Bool);
+
+        if (controller.layers.Length >= 2)
+        {
+            var gunMask = AssetDatabase.LoadAssetAtPath<AvatarMask>(MaskPath);
+            if (gunMask != null)
+            {
+                AnimatorControllerLayer[] layers = controller.layers;
+                layers[1].avatarMask = gunMask;
+                controller.layers = layers;
+            }
+        }
+
+        BlendTree crouchTree = BuildCrouchBlendTree(controller);
+        if (crouchTree == null)
+            return;
+
+        AnimatorStateMachine baseRoot = controller.layers[0].stateMachine;
+        AnimatorStateMachine liveLocomotion = FindStateMachineRecursive(baseRoot, "Locomotion");
+        AnimatorStateMachine liveStrafe = FindStateMachineRecursive(liveLocomotion, "Strafe Locomotion");
+        AnimatorState liveMovement = FindStateRecursive(liveStrafe, "Strafing Movement")
+            ?? FindStateRecursive(liveLocomotion, "Strafing Movement");
+
+        if (liveStrafe == null || liveMovement == null)
+        {
+            Debug.LogError("Live Strafe Locomotion / Strafing Movement not found on Base Layer.");
+            return;
+        }
+
+        AnimatorState crouchState = FindStateRecursive(liveStrafe, "Strafing Crouch");
+        if (crouchState == null)
+            crouchState = liveStrafe.AddState("Strafing Crouch", new Vector3(264f, 204f, 0f));
+
+        crouchState.motion = crouchTree;
+        crouchState.speedParameterActive = false;
+        crouchState.iKOnFeet = true;
+        crouchState.writeDefaultValues = true;
+
+        EnsureTransition(liveMovement, crouchState, "IsCrouching", true);
+        EnsureTransition(crouchState, liveMovement, "IsCrouching", false);
+
+        if (liveLocomotion != null)
+            EnsureEntryTransition(liveLocomotion, crouchState, isStrafing: true, isCrouching: true);
+
+        // Patch orphan Free/Strafing Crouch under unused Free Locomotion (IsStrafing always true at runtime).
+        AnimatorState freeLocomotionState = FindStateRecursive(baseRoot, "Free Locomotion");
+        AnimatorState freeCrouch = FindStateRecursive(baseRoot, "Free Crouch");
+        if (freeCrouch != null)
+        {
+            freeCrouch.motion = crouchTree;
+            freeCrouch.speedParameterActive = false;
+            freeCrouch.iKOnFeet = true;
+            if (freeLocomotionState != null)
+            {
+                EnsureTransition(freeLocomotionState, freeCrouch, "IsCrouching", true);
+                EnsureTransition(freeCrouch, freeLocomotionState, "IsCrouching", false);
+            }
+        }
+
+        AnimatorState orphanCrouch = FindStateRecursive(baseRoot, "Strafing Crouch");
+        if (orphanCrouch != null && orphanCrouch != crouchState)
+        {
+            orphanCrouch.motion = crouchTree;
+            orphanCrouch.speedParameterActive = false;
+        }
+
+        MuteBrokenIsCrouchingTransitions(controller);
+        EditorUtility.SetDirty(controller);
+        Debug.Log("Wired live Strafing Crouch with Crouch Locomotion blend tree.");
+    }
+
+    private static void MuteBrokenIsCrouchingTransitions(AnimatorController controller)
+    {
+        Object[] assets = AssetDatabase.LoadAllAssetsAtPath(ControllerPath);
+        for (int i = 0; i < assets.Length; i++)
+        {
+            if (assets[i] is not AnimatorStateTransition transition)
+                continue;
+
+            if (transition.destinationState != null || transition.destinationStateMachine != null || transition.isExit)
+                continue;
+
+            bool mentionsCrouch = false;
+            AnimatorCondition[] conditions = transition.conditions;
+            for (int c = 0; c < conditions.Length; c++)
+            {
+                if (conditions[c].parameter == "IsCrouching")
+                {
+                    mentionsCrouch = true;
+                    break;
+                }
+            }
+
+            if (!mentionsCrouch)
+                continue;
+
+            transition.mute = true;
+            EditorUtility.SetDirty(transition);
+        }
+    }
+
+    private static void EnsureTransition(
+        AnimatorState from,
+        AnimatorState to,
+        string boolParam,
+        bool boolValue)
+    {
+        foreach (AnimatorStateTransition t in from.transitions)
+        {
+            if (t.destinationState != to)
+                continue;
+
+            for (int i = 0; i < t.conditions.Length; i++)
+            {
+                if (t.conditions[i].parameter == boolParam)
+                    return;
+            }
+        }
+
+        AnimatorStateTransition transition = from.AddTransition(to);
+        transition.hasExitTime = false;
+        transition.duration = 0.2f;
+        transition.AddCondition(
+            boolValue ? AnimatorConditionMode.If : AnimatorConditionMode.IfNot,
+            0f,
+            boolParam);
+    }
+
+    private static void EnsureEntryTransition(
+        AnimatorStateMachine machine,
+        AnimatorState destination,
+        bool isStrafing,
+        bool isCrouching)
+    {
+        foreach (AnimatorTransition t in machine.entryTransitions)
+        {
+            if (t.destinationState != destination)
+                continue;
+
+            bool hasStrafe = false;
+            bool hasCrouch = false;
+            for (int i = 0; i < t.conditions.Length; i++)
+            {
+                if (t.conditions[i].parameter == "IsStrafing")
+                    hasStrafe = true;
+                if (t.conditions[i].parameter == "IsCrouching")
+                    hasCrouch = true;
+            }
+
+            if (hasStrafe && hasCrouch)
+                return;
+        }
+
+        AnimatorTransition entry = machine.AddEntryTransition(destination);
+        entry.AddCondition(
+            isStrafing ? AnimatorConditionMode.If : AnimatorConditionMode.IfNot,
+            0f,
+            "IsStrafing");
+        entry.AddCondition(
+            isCrouching ? AnimatorConditionMode.If : AnimatorConditionMode.IfNot,
+            0f,
+            "IsCrouching");
+    }
+
+    private static AnimatorStateMachine FindStateMachineRecursive(AnimatorStateMachine machine, string name)
+    {
+        if (machine == null)
+            return null;
+
+        if (machine.name == name)
+            return machine;
+
+        foreach (ChildAnimatorStateMachine child in machine.stateMachines)
+        {
+            if (child.stateMachine != null && child.stateMachine.name == name)
+                return child.stateMachine;
+
+            AnimatorStateMachine nested = FindStateMachineRecursive(child.stateMachine, name);
+            if (nested != null)
+                return nested;
+        }
+
+        return null;
+    }
+
+    private static BlendTree BuildCrouchBlendTree(AnimatorController controller)
+    {
+        AnimationClip idle = AssetDatabase.LoadAssetAtPath<AnimationClip>(CrouchFolder + "/crouch idle.anim")
+            ?? LoadCrouchClip("Crouch Idle.fbx", "Crouch Idle")
+            ?? LoadCrouchClip("Crouch Idle.fbx", null);
+        AnimationClip forward = AssetDatabase.LoadAssetAtPath<AnimationClip>(CrouchFolder + "/Crouch Walking.anim")
+            ?? LoadCrouchClip("Crouch Walking.fbx", null);
+        AnimationClip backward = AssetDatabase.LoadAssetAtPath<AnimationClip>(CrouchFolder + "/Walk Crouching Backward.anim")
+            ?? LoadCrouchClip("Walk Crouching Backward.fbx", null);
+        AnimationClip left = AssetDatabase.LoadAssetAtPath<AnimationClip>(CrouchFolder + "/Walk Crouching Left.anim")
+            ?? LoadCrouchClip("Walk Crouching Left.fbx", null);
+        AnimationClip right = AssetDatabase.LoadAssetAtPath<AnimationClip>(CrouchFolder + "/Walk Crouching Right.anim")
+            ?? LoadCrouchClip("Walk Crouching Right.fbx", null);
+
+        if (idle == null || forward == null || backward == null || left == null || right == null)
+        {
+            Debug.LogError(
+                $"Missing crouch clips. idle={idle != null} fwd={forward != null} back={backward != null} left={left != null} right={right != null}");
+            return null;
+        }
+
+        BlendTree tree = null;
+        Object[] assets = AssetDatabase.LoadAllAssetsAtPath(ControllerPath);
+        for (int i = 0; i < assets.Length; i++)
+        {
+            if (assets[i] is BlendTree bt && bt.name == "Crouch Locomotion")
+            {
+                tree = bt;
+                break;
+            }
+        }
+
+        if (tree == null)
+        {
+            tree = new BlendTree { name = "Crouch Locomotion" };
+            AssetDatabase.AddObjectToAsset(tree, controller);
+        }
+
+        tree.blendType = BlendTreeType.FreeformCartesian2D;
+        tree.blendParameter = "InputHorizontal";
+        tree.blendParameterY = "InputVertical";
+        tree.useAutomaticThresholds = false;
+        while (tree.children.Length > 0)
+            tree.RemoveChild(0);
+
+        // (0,0) idle at center; cardinal crouch walks on the axes.
+        tree.AddChild(idle, new Vector2(0f, 0f));
+        tree.AddChild(forward, new Vector2(0f, 1f));
+        tree.AddChild(backward, new Vector2(0f, -1f));
+        tree.AddChild(left, new Vector2(-1f, 0f));
+        tree.AddChild(right, new Vector2(1f, 0f));
+        EditorUtility.SetDirty(tree);
+
+        // Keep the authored "Crouch" Freeform Cartesian tree aligned the same way.
+        for (int i = 0; i < assets.Length; i++)
+        {
+            if (assets[i] is BlendTree namedCrouch && namedCrouch.name == "Crouch")
+            {
+                namedCrouch.blendType = BlendTreeType.FreeformCartesian2D;
+                namedCrouch.blendParameter = "InputHorizontal";
+                namedCrouch.blendParameterY = "InputVertical";
+                namedCrouch.useAutomaticThresholds = false;
+                while (namedCrouch.children.Length > 0)
+                    namedCrouch.RemoveChild(0);
+                namedCrouch.AddChild(idle, new Vector2(0f, 0f));
+                namedCrouch.AddChild(forward, new Vector2(0f, 1f));
+                namedCrouch.AddChild(backward, new Vector2(0f, -1f));
+                namedCrouch.AddChild(left, new Vector2(-1f, 0f));
+                namedCrouch.AddChild(right, new Vector2(1f, 0f));
+                EditorUtility.SetDirty(namedCrouch);
+                break;
+            }
+        }
+
+        return tree;
+    }
+
+    private static AnimationClip LoadCrouchClip(string fileName, string preferredName)
+    {
+        Object[] assets = AssetDatabase.LoadAllAssetsAtPath(CrouchFolder + "/" + fileName);
+        AnimationClip first = null;
+        for (int i = 0; i < assets.Length; i++)
+        {
+            if (assets[i] is AnimationClip clip && !clip.name.StartsWith("__preview__"))
+            {
+                if (preferredName != null && clip.name == preferredName)
+                    return clip;
+                if (first == null)
+                    first = clip;
+            }
+        }
+
+        return first;
+    }
+
+    private static void AssignMotionToNamedState(AnimatorStateMachine root, string stateName, Motion motion)
+    {
+        AnimatorState state = FindStateRecursive(root, stateName);
+        if (state == null)
+        {
+            Debug.LogWarning("Animator state not found: " + stateName);
+            return;
+        }
+
+        state.motion = motion;
+        state.speedParameterActive = false;
+        EditorUtility.SetDirty(state);
+    }
+
+    private static AnimatorState FindStateRecursive(AnimatorStateMachine machine, string stateName)
+    {
+        if (machine == null)
+            return null;
+
+        foreach (ChildAnimatorState child in machine.states)
+        {
+            if (child.state != null && child.state.name == stateName)
+                return child.state;
+        }
+
+        foreach (ChildAnimatorStateMachine childMachine in machine.stateMachines)
+        {
+            AnimatorState found = FindStateRecursive(childMachine.stateMachine, stateName);
+            if (found != null)
+                return found;
+        }
+
+        return null;
+    }
+
     private static void CreateSpineMiddleMask()
     {
         Directory.CreateDirectory("Assets/Animations");

@@ -7,7 +7,9 @@ public class ResidentEvilAimCamera : MonoBehaviour
     public Transform followTarget;
     public Transform spineAnchor;
     [Tooltip("Camera position relative to the player root (authored from scene placement).")]
-    public Vector3 localPositionOffset = new Vector3(0.85f, 1.75f, -0.83f);
+    public Vector3 localPositionOffset = new Vector3(0.48f, 1.65f, -0.95f);
+    [Tooltip("Extra rotation applied after aim pitch/yaw (X=pitch, Y=yaw, Z=roll).")]
+    public Vector3 localRotationOffset = Vector3.zero;
     [Tooltip("Starting horizontal look angle when aim syncs without a third-person camera.")]
     public float defaultYaw = 182f;
 
@@ -27,6 +29,10 @@ public class ResidentEvilAimCamera : MonoBehaviour
     public LayerMask cameraCollisionMask = ~0;
     public float cameraCollisionRadius = 0.2f;
     public float crosshairMinDistance = 0.5f;
+
+    [Header("Aim Point")]
+    [Tooltip("UI crosshair. Aim/fire rays go through this screen point (not camera dead-center).")]
+    public RectTransform aimCrosshair;
 
     [Header("Recoil")]
     public float recoilRecoverySpeed = 14f;
@@ -134,9 +140,41 @@ public class ResidentEvilAimCamera : MonoBehaviour
         _recoilKick += impulse;
     }
 
+    /// <summary>
+    /// Ray from the aim camera through the authored crosshair (or viewport center if unset).
+    /// </summary>
+    public Ray GetAimRay()
+    {
+        if (_camera == null)
+            _camera = GetComponent<Camera>();
+
+        if (_camera == null)
+            return new Ray(transform.position, transform.forward);
+
+        if (aimCrosshair != null)
+        {
+            // Screen Space Overlay: RectTransform.position is already in screen pixels.
+            Vector3 screenPoint = aimCrosshair.position;
+            screenPoint.z = 0f;
+            return _camera.ScreenPointToRay(screenPoint);
+        }
+
+        return _camera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0f));
+    }
+
     public Ray GetScreenCenterRay()
     {
-        return new Ray(transform.position, transform.forward);
+        return GetAimRay();
+    }
+
+    public Vector3 GetAimDirection()
+    {
+        return GetAimRay().direction.normalized;
+    }
+
+    public void SetAimCrosshair(RectTransform crosshair)
+    {
+        aimCrosshair = crosshair;
     }
 
     private void LateUpdate()
@@ -149,7 +187,7 @@ public class ResidentEvilAimCamera : MonoBehaviour
         SyncFollowTargetToLookYaw();
 
         Vector3 targetPosition = ResolveTargetPosition();
-        Quaternion targetRotation = Quaternion.Euler(_smoothedPitch + _recoilKick, _smoothedBodyYaw, 0f);
+        Quaternion targetRotation = ComposeAimRotation(_smoothedPitch + _recoilKick, _smoothedBodyYaw);
         ApplyTransitionOrSnap(targetPosition, targetRotation);
 
         SyncUpperBodyAim();
@@ -191,7 +229,16 @@ public class ResidentEvilAimCamera : MonoBehaviour
 
     private void ApplySnappedRotation()
     {
-        transform.rotation = Quaternion.Euler(_smoothedPitch + _recoilKick, _smoothedBodyYaw, 0f);
+        transform.rotation = ComposeAimRotation(_smoothedPitch + _recoilKick, _smoothedBodyYaw);
+    }
+
+    private Quaternion ComposeAimRotation(float pitch, float yaw)
+    {
+        Quaternion baseRotation = Quaternion.Euler(pitch, yaw, 0f);
+        if (localRotationOffset.sqrMagnitude < 0.0001f)
+            return baseRotation;
+
+        return baseRotation * Quaternion.Euler(localRotationOffset);
     }
 
     private void SnapSmoothedValues()
@@ -286,7 +333,7 @@ public class ResidentEvilAimCamera : MonoBehaviour
     {
         SnapSmoothedValues();
         Vector3 targetPosition = ResolveTargetPosition();
-        Quaternion targetRotation = Quaternion.Euler(_smoothedPitch + _recoilKick, _smoothedBodyYaw, 0f);
+        Quaternion targetRotation = ComposeAimRotation(_smoothedPitch + _recoilKick, _smoothedBodyYaw);
         transform.SetPositionAndRotation(targetPosition, targetRotation);
     }
 
@@ -323,6 +370,13 @@ public class ResidentEvilAimCamera : MonoBehaviour
 
         if (upperBodyAim == null && followTarget != null)
             upperBodyAim = followTarget.GetComponent<UpperBodyAim>();
+
+        if (aimCrosshair == null)
+        {
+            GameObject crosshairGo = GameObject.Find("Crossair");
+            if (crosshairGo != null)
+                aimCrosshair = crosshairGo.GetComponent<RectTransform>();
+        }
 
         if (followTarget != null)
         {

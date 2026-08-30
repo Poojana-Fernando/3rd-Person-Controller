@@ -40,4 +40,4 @@ public class WeaponDefinition : ScriptableObject
     public GameObject hitPrefab;
     public GameObject decalPrefab;
 }
-
+

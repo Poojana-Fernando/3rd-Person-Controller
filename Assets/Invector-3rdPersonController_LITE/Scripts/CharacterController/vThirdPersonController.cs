@@ -4,6 +4,8 @@ namespace Motiong.vCharacterController
 {
     public class vThirdPersonController : vThirdPersonAnimator
     {
+        public float LocomotionRotationSpeed => ActiveSpeed.rotationSpeed;
+
         [Header("- Slide Audio")]
         [SerializeField] private AudioSource slideAudioSource;
         [SerializeField] private AudioClip slideClip;
@@ -17,10 +19,27 @@ namespace Motiong.vCharacterController
             if (isSliding)
                 return;
 
+            ParkourController parkour = GetComponent<ParkourController>();
+            bool skipRootRotation = parkour != null && parkour.IsOverridingRootRotation;
+
             if (inputSmooth == Vector3.zero)
             {
-                transform.position = animator.rootPosition;
-                transform.rotation = animator.rootRotation;
+                if (_rigidbody != null && _rigidbody.isKinematic)
+                {
+                    _rigidbody.position = animator.rootPosition;
+                    if (!skipRootRotation)
+                        _rigidbody.rotation = animator.rootRotation;
+                }
+                else
+                {
+                    transform.position = animator.rootPosition;
+                    if (!skipRootRotation)
+                        transform.rotation = animator.rootRotation;
+                }
+
+                // Parkour and other locked root-motion actions own the body — do not blend MoveCharacter on top.
+                if (lockMovement)
+                    return;
             }
 
             if (useRootMotion)

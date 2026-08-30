@@ -23,18 +23,25 @@ namespace Motiong.vCharacterController
         [HideInInspector] public Camera cameraMain;
 
         protected PlayerGunController gunController;
+        protected ParkourController parkourController;
 
         #endregion
 
         protected virtual void Start()
         {
             gunController = GetComponent<PlayerGunController>();
+            parkourController = GetComponent<ParkourController>();
             InitilizeController();
             InitializeTpCamera();
         }
 
         protected virtual void FixedUpdate()
         {
+            bool inParkourAction = parkourController != null && parkourController.IsInParkourAction;
+
+            if (inParkourAction)
+                return;
+
             cc.UpdateMotor();               // updates the ThirdPersonMotor methods
             cc.UpdateSlide();               // ends slide when timer/grounding expire
             cc.ControlLocomotionType();     // handle the controller locomotion type and movespeed
@@ -44,7 +51,10 @@ namespace Motiong.vCharacterController
         protected virtual void Update()
         {
             InputHandle();                  // update the input methods
-            cc.UpdateAnimator();            // updates the Animator Parameters
+
+            bool inParkourAction = parkourController != null && parkourController.IsInParkourAction;
+            if (!inParkourAction)
+                cc.UpdateAnimator();            // updates the Animator Parameters
         }
 
         public virtual void OnAnimatorMove()
@@ -79,6 +89,15 @@ namespace Motiong.vCharacterController
 
         protected virtual void InputHandle()
         {
+            if (parkourController != null && parkourController.IsInParkourAction)
+            {
+                cc.input = Vector3.zero;
+                cc.inputSmooth = Vector3.zero;
+                cc.Sprint(false);
+                CameraInput(updateMoveDirection: false);
+                return;
+            }
+
             MoveInput();
             CameraInput();
             SprintInput();
@@ -93,7 +112,7 @@ namespace Motiong.vCharacterController
             cc.input.z = Input.GetAxis(verticallInput);
         }
 
-        protected virtual void CameraInput()
+        protected virtual void CameraInput(bool updateMoveDirection = true)
         {
             if (gunController != null && gunController.BlockThirdPersonCameraInput)
             {
@@ -102,7 +121,8 @@ namespace Motiong.vCharacterController
                 {
                     cameraMain = activeCamera;
                     cc.rotateTarget = activeCamera.transform;
-                    cc.UpdateMoveDirection(activeCamera.transform);
+                    if (updateMoveDirection)
+                        cc.UpdateMoveDirection(activeCamera.transform);
                 }
 
                 return;
@@ -124,7 +144,7 @@ namespace Motiong.vCharacterController
                 }
             }
 
-            if (cameraMain)
+            if (cameraMain && updateMoveDirection)
             {
                 cc.UpdateMoveDirection(cameraMain.transform);
             }
@@ -184,6 +204,10 @@ namespace Motiong.vCharacterController
         /// </summary>
         protected virtual void JumpInput()
         {
+            // Near a ledge, Space is owned by Parkour StepUp — do not also jump.
+            if (parkourController != null && parkourController.ShouldSuppressJump)
+                return;
+
             if (Input.GetKeyDown(jumpInput) && JumpConditions())
                 cc.Jump();
         }
