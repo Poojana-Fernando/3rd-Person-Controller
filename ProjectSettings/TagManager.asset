@@ -20,6 +20,7 @@ TagManager:
   - Obstacles
   - 
   - Enemy
+  - CharacterHitbox
   - 
   - 
   - 
@@ -39,10 +40,8 @@ TagManager:
   - 
   - 
   - 
-  - 
-  - 
-  - 
-  - 
+  - FirstPersonHidden
+  - Viewmodel
   m_SortingLayers:
   - name: Default
     uniqueID: 0
