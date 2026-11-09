@@ -340,10 +340,9 @@ public class vThirdPersonCamera : MonoBehaviour
     {
         if (_firstPerson && _firstPersonRig != null && _firstPersonRig.IsActive)
         {
-            _firstPersonRig.ApplyLookInput(x, y);
+            // Look is driven only by FirstPersonSystem.ReadInputDirect — sync orbit for legacy readers.
             _firstPersonRig.ExportOrbit(out mouseX, out mouseY);
-            movementSpeed.x = x;
-            movementSpeed.y = -y;
+            movementSpeed = Vector2.zero;
             return;
         }
 

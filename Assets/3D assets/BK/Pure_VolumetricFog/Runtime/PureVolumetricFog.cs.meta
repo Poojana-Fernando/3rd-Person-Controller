@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: 7a8a4f589d342f24fbade49a21a154f2
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 408118
+  packageName: Pure Volumetric Fog
+  packageVersion: 1.0
+  assetPath: Assets/BK/Pure_VolumetricFog/Runtime/PureVolumetricFog.cs
+  uploadId: 997188

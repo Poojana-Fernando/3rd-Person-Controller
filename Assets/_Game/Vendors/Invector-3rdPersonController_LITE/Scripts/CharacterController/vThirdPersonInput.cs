@@ -187,6 +187,9 @@ namespace Motiong.vCharacterController
             if (tpCamera == null || Game.Net.LobbyMenuController.BlocksLookInput)
                 return;
 
+            if (_firstPersonView && tpCamera.IsFirstPerson)
+                return;
+
             var Y = Input.GetAxis(rotateCameraYInput);
             var X = Input.GetAxis(rotateCameraXInput);
 
